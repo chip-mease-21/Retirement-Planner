@@ -214,7 +214,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
           <div class="sl">Retirement timing</div>
           <div class="cg">
             <div class="sl-lbl">Eric retires at age <span class="sl-v" id="lbl-era">69</span></div>
-            <input type="range" min="62" max="70" value="69" id="sl-era" oninput="syncRetire()">
+            <input type="range" min="60" max="70" value="69" id="sl-era" oninput="syncRetire()">
             <div class="hint" id="retire-hint">Karen retires same year at age 63 · Year 14 from now</div>
           </div>
 
@@ -298,7 +298,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="mets">
           <div class="met mg"><div class="ml">Steady state /mo</div><div class="mv" id="m-tot">—</div><div class="ms" id="m-tot-sub">all SS flowing</div><div class="mb"></div></div>
           <div class="met ma"><div class="ml">Year 1 income /mo</div><div class="mv" id="m-yr1">—</div><div class="ms" id="m-yr1-sub">at retirement date</div><div class="mb"></div></div>
+          <div class="met mn"><div class="ml">Annual income</div><div class="mv" id="m-ann">—</div><div class="ms">steady state × 12</div><div class="mb"></div></div>
           <div class="met mgo"><div class="ml">Liquid assets</div><div class="mv" id="m-liq">—</div><div class="ms">at retirement</div><div class="mb"></div></div>
+          <div class="met mg"><div class="ml">Max income /mo</div><div class="mv" id="m-max">—</div><div class="ms" id="m-max-sub">age 70, all SS, full portfolio</div><div class="mb"></div></div>
           <div class="met ma"><div class="ml">Gross surplus /mo</div><div class="mv" id="m-sur">—</div><div class="ms">vs $9K before tax</div><div class="mb"></div></div>
         </div>
         <!-- AFTER-TAX METRICS -->
@@ -993,31 +995,37 @@ function calcAssets(age) {
   const rk = (S.karenRet || 7.25) / 100 / 12;
   let eb = 155000, kb = 220000;
   for (let y = 1; y <= yr; y++) {
-    // Eric: salary grows at raise rate, contribution at set pct of total comp
+    const retireYr = age - 55; // year they retire (= yr when calling calcAssets(age))
+    const stillWorking = y < retireYr; // contributions stop IN the retirement year
+
+    // Eric 403(b): only while working
     const eSal = 175000 * Math.pow(1 + (S.ericRaise||3)/100, y);
-    const eEmp = Math.min(eSal * (S.ericPct||9)/100, 23500 + ((S.ericAge>=50)?7500:0));
-    const eMatch = eSal * 0.06;
-    // Bonus: ~$18K gross bonus × 9% emp + 6% er = $2,705/yr confirmed
+    const eEmp = stillWorking ? Math.min(eSal * (S.ericPct||9)/100, 23500 + ((55+y)>=50?7500:0)) : 0;
+    const eMatch = stillWorking ? eSal * 0.06 : 0;
     const bonusGross = 18033;
-    const eBonus = bonusGross * (S.ericPct/100 + 0.06);
+    const eBonus = stillWorking ? bonusGross * ((S.ericPct||9)/100 + 0.06) : 0;
     const eTotalAnnual = eEmp + eMatch + eBonus;
     for (let m = 0; m < 12; m++) eb = eb*(1+re) + eTotalAnnual/12;
-    // Karen: salary grows at raise rate
+
+    // Karen 403(b): only while working (retires same year as Eric)
     const kSal = 138000 * Math.pow(1 + (S.karenRaise||2)/100, y);
     const kPct = (S.karenPct||12)/100;
-    const kEmp = Math.min(kSal * kPct, 23500 + ((49+(S.ericAge-55)+y)>=50?7500:0));
-    // UVA employer: 401(a) match $106.21 + Plan 2 $211.73 = $317.94/period × 26 = $8,267/yr
-    // As % of Karen salary: $8,267 / $137,620 = 6.0%
-    const kMatch = kSal * 0.06;
+    const kEmp = stillWorking ? Math.min(kSal * kPct, 23500 + ((49+y)>=50?7500:0)) : 0;
+    const kMatch = stillWorking ? kSal * 0.06 : 0; // UVA employer match also stops
     const kTotalAnnual = kEmp + kMatch;
     for (let m = 0; m < 12; m++) kb = kb*(1+rk) + kTotalAnnual/12;
   }
-  // Additional investments
+  // Additional investments — stop at retirement
   let addl = 0;
   if (S.addlInvests && S.addlInvests.length > 0) {
     S.addlInvests.forEach(inv => {
-      const rm = inv.ret/100/12, n = yr*12;
-      addl += inv.amt * ((Math.pow(1+rm, n)-1)/rm);
+      const rm = inv.ret/100/12;
+      const workYrs = Math.max(0, yr - 1); // contributions stop at retirement
+      const totalYrs = yr;
+      // Contributions for working years, then compound remaining years
+      const fvContrib = inv.amt * ((Math.pow(1+rm, workYrs*12)-1)/rm);
+      const fvCompound = fvContrib * Math.pow(1+rm, 12); // 1 more yr compounding
+      addl = fvCompound;
     });
   }
   let home = 0;
@@ -1054,7 +1062,7 @@ function syncRetire() {
   const karenAge = 49 + (S.ericAge - 55);
   document.getElementById('lbl-era').textContent = S.ericAge;
   document.getElementById('retire-hint').textContent =
-    `Karen retires same year at age ${karenAge} · Year ${S.ericAge-55} from now`;
+    `Karen retires same year at age ${karenAge} · ${S.ericAge < 55 ? S.ericAge-55+" yrs (already passed)" : "Year "+(S.ericAge-55)+" from now (2"+(2026+(S.ericAge-55))+")"}`;
   update();
 }
 
@@ -1195,10 +1203,20 @@ function renderAll() {
   const taxYr1 = calcTax(port, S.ha, ss.year1.eSS, ss.year1.kSS, S.rothMonthly || 500);
 
   // Metrics
+  // Max income scenario — age 70, all SS claimed at best ages
+  const maxAssets = calcAssets(70);
+  const maxPort   = maxAssets.total * 0.04 / 12;
+  const maxIncome = maxPort + (S.ha||3500) + (ERIC_SS[70]||3989) + (KAREN_SS[67]||3567);
+
   document.getElementById('m-tot').textContent = fmt(total);
   document.getElementById('m-tot-sub').textContent = ss.yrsToFull > 0
     ? 'once all SS active (Eric age ' + ss.ericAgeAtFull + ')'
     : 'all SS flowing at retirement';
+  document.getElementById('m-ann').textContent = fmtM(total * 12);
+  if (document.getElementById('m-max')) {
+    document.getElementById('m-max').textContent = fmt(maxIncome);
+    document.getElementById('m-max-sub').textContent = 'age 70 · Eric SS $3,989 · Karen SS $3,567';
+  }
   document.getElementById('m-yr1').textContent = fmt(totalYr1);
   // Build a clear gap description
   let gapDesc = 'full income from day 1';
@@ -1276,7 +1294,8 @@ function renderAll() {
 
   // Insight
   let ins = '';
-  if (S.ericAge <= 65) ins = `<div class="flag fg"><strong>Age ${S.ericAge} works — income far exceeds lifestyle need.</strong> ${fmt(total)}/mo is ${fmt(surplus)}/mo above your ~$9K lifestyle cost. Karen retires at ${karenAge} the same year.</div>`;
+  if (S.ericAge <= 61) ins = `<div class="flag fn"><strong>Age ${S.ericAge} — early retirement. Karen is ${karenAge}.</strong> ${fmt(totalYr1)}/mo at retirement${ss.yrsToFull>0?' (before SS — full income '+fmt(total)+'/mo at Eric age '+ss.ericAgeAtFull+')':''}. Inheritance from Karen's father expected ${5-(S.ericAge-55)>0?'in '+(5-(S.ericAge-55))+' yr'+((5-(S.ericAge-55))>1?'s':''):'already received'}.</div>`;
+  else if (S.ericAge <= 65) ins = \`<div class="flag fg"><strong>Age \${S.ericAge} works — income far exceeds lifestyle need.</strong> \${fmt(total)}/mo is \${fmt(surplus)}/mo above your ~$9K lifestyle cost. Karen retires at \${karenAge} the same year.</div>\`;
   else if (S.ericAge === 69) {
     if (ss.yrsToFull > 0) {
       ins = `<div class="flag fg"><strong>★ Sweet spot — age 69. Both retire together.</strong> Karen is 63.<br>
@@ -1311,7 +1330,7 @@ function renderScenarioTable() {
   const tbody = document.getElementById('stbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  for (let age = 62; age <= 70; age++) {
+  for (let age = 60; age <= 70; age++) {
     try {
       const a = calcAssets(age);
       const port = a.total * 0.04 / 12;
