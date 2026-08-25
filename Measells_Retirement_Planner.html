@@ -1015,17 +1015,16 @@ function calcAssets(age) {
     const kTotalAnnual = kEmp + kMatch;
     for (let m = 0; m < 12; m++) kb = kb*(1+rk) + kTotalAnnual/12;
   }
-  // Additional investments — stop at retirement
+  // Additional investments — stop contributions at retirement, keep compounding
   let addl = 0;
   if (S.addlInvests && S.addlInvests.length > 0) {
     S.addlInvests.forEach(inv => {
       const rm = inv.ret/100/12;
-      const workYrs = Math.max(0, yr - 1); // contributions stop at retirement
-      const totalYrs = yr;
-      // Contributions for working years, then compound remaining years
-      const fvContrib = inv.amt * ((Math.pow(1+rm, workYrs*12)-1)/rm);
-      const fvCompound = fvContrib * Math.pow(1+rm, 12); // 1 more yr compounding
-      addl = fvCompound;
+      const workYrs = Math.max(0, yr - 1); // contribute during working years only
+      // FV of contributions during working years
+      const fvContrib = workYrs > 0 ? inv.amt * ((Math.pow(1+rm, workYrs*12)-1)/rm) : 0;
+      // Then compound that amount for remaining year(s)
+      addl += fvContrib * Math.pow(1+rm, 12);
     });
   }
   let home = 0;
@@ -1062,7 +1061,7 @@ function syncRetire() {
   const karenAge = 49 + (S.ericAge - 55);
   document.getElementById('lbl-era').textContent = S.ericAge;
   document.getElementById('retire-hint').textContent =
-    `Karen retires same year at age ${karenAge} · ${S.ericAge < 55 ? S.ericAge-55+" yrs (already passed)" : "Year "+(S.ericAge-55)+" from now (2"+(2026+(S.ericAge-55))+")"}`;
+    `Karen retires same year at age ${karenAge} · Year ${S.ericAge-55} from now (${2026+(S.ericAge-55)})`;
   update();
 }
 
@@ -1082,6 +1081,9 @@ function update() {
 // Returns { federal, state, total, netMonthly, effectiveRate }
 // All inputs/outputs monthly; internally works annually
 function calcTax(port, ha, ericSS, karenSS, rothMonthly) {
+  // Guard against NaN/undefined
+  port = +port || 0; ha = +ha || 0; ericSS = +ericSS || 0;
+  karenSS = +karenSS || 0; rothMonthly = +rothMonthly || 0;
   const portAnnual   = port * 12;
   const haAnnual     = ha   * 12;   // tax-free
   const ssAnnual     = (ericSS + karenSS) * 12;
@@ -1148,18 +1150,17 @@ function calcTax(port, ha, ericSS, karenSS, rothMonthly) {
 
 
 // ── SS TIMING HELPER ──
-// Returns { year1: {eSS, kSS, total}, steady: {eSS, kSS, total} }
-// year1 = income the year they retire (SS may not have started yet)
-// steady = income once all SS sources are active
 function calcSSIncome(ericRetireAge, ericSSAge, karenSSAge, port, ha) {
-  const eSS_full = (ERIC_SS[ericSSAge]  || ERIC_SS[70]  || 3989);
-  const kSS_full = (KAREN_SS[karenSSAge] || KAREN_SS[67] || 3567);
+  // SS minimum age is 62 — clamp claim ages
+  const ericSSAgeClamped  = Math.max(62, ericSSAge  || 70);
+  const karenSSAgeClamped = Math.max(62, karenSSAge || 67);
+  const eSS_full = (ERIC_SS[ericSSAgeClamped]  || ERIC_SS[70]  || 3989);
+  const kSS_full = (KAREN_SS[karenSSAgeClamped] || KAREN_SS[67] || 3567);
   const karenRetireAge = 49 + (ericRetireAge - 55);
 
-  // Eric's SS: 0 until he reaches his claim age
-  const eSS_yr1  = ericRetireAge >= ericSSAge ? eSS_full : 0;
-  // Karen's SS: 0 until she reaches her claim age
-  const kSS_yr1  = karenRetireAge >= karenSSAge ? kSS_full : 0;
+  // SS only flows once retirement age >= claim age (and claim age >= 62)
+  const eSS_yr1 = ericRetireAge >= ericSSAgeClamped ? eSS_full : 0;
+  const kSS_yr1 = karenRetireAge >= karenSSAgeClamped ? kSS_full : 0;
 
   const total_yr1    = port + ha + eSS_yr1 + kSS_yr1;
   const total_steady = port + ha + eSS_full + kSS_full;
@@ -1212,7 +1213,7 @@ function renderAll() {
   document.getElementById('m-tot-sub').textContent = ss.yrsToFull > 0
     ? 'once all SS active (Eric age ' + ss.ericAgeAtFull + ')'
     : 'all SS flowing at retirement';
-  document.getElementById('m-ann').textContent = fmtM(total * 12);
+  if (document.getElementById('m-ann')) document.getElementById('m-ann').textContent = fmtM(total * 12);
   if (document.getElementById('m-max')) {
     document.getElementById('m-max').textContent = fmt(maxIncome);
     document.getElementById('m-max-sub').textContent = 'age 70 · Eric SS $3,989 · Karen SS $3,567';
@@ -1294,8 +1295,8 @@ function renderAll() {
 
   // Insight
   let ins = '';
-  if (S.ericAge <= 61) ins = `<div class="flag fn"><strong>Age ${S.ericAge} — early retirement. Karen is ${karenAge}.</strong> ${fmt(totalYr1)}/mo at retirement${ss.yrsToFull>0?' (before SS — full income '+fmt(total)+'/mo at Eric age '+ss.ericAgeAtFull+')':''}. Inheritance from Karen's father expected ${5-(S.ericAge-55)>0?'in '+(5-(S.ericAge-55))+' yr'+((5-(S.ericAge-55))>1?'s':''):'already received'}.</div>`;
-  else if (S.ericAge <= 65) ins = \`<div class="flag fg"><strong>Age \${S.ericAge} works — income far exceeds lifestyle need.</strong> \${fmt(total)}/mo is \${fmt(surplus)}/mo above your ~$9K lifestyle cost. Karen retires at \${karenAge} the same year.</div>\`;
+  if (S.ericAge <= 61) ins = '<div class="flag fn"><strong>Age ' + S.ericAge + ' — early retirement. Karen is ' + karenAge + '.</strong> ' + fmt(totalYr1) + '/mo at retirement' + (ss.yrsToFull>0?' · Full income ' + fmt(total) + '/mo at Eric age ' + ss.ericAgeAtFull:'') + '. No SS available until 62.</div>';
+  else if (S.ericAge <= 65) ins = '<div class="flag fg"><strong>Age ' + S.ericAge + ' works — income far exceeds lifestyle need.</strong> ' + fmt(total) + '/mo is ' + fmt(surplus) + '/mo above your ~$9K lifestyle cost. Karen retires at ' + karenAge + ' the same year.</div>';
   else if (S.ericAge === 69) {
     if (ss.yrsToFull > 0) {
       ins = `<div class="flag fg"><strong>★ Sweet spot — age 69. Both retire together.</strong> Karen is 63.<br>
