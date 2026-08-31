@@ -527,7 +527,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
           <div class="tl-blk p1">
             <div class="tl-tag" style="color:#1a6b3c">Phase 1 — Now to Year 8</div>
             <div class="tl-val" style="color:#1a6b3c">Stay & build</div>
-            <div class="tl-desc">Eric age 55→63 · Karen 49→57. Keep current 3% mortgage. Home grows $950K → ~$1.30M. Equity $500K → ~$960K. Net wealth-building: ~$4,176/mo. Monthly cost stays $3,700.</div>
+            <div class="tl-desc">Eric age 55→63 · Karen 49→57. Keep current 3% mortgage. Home grows $900K → ~$1.30M. Equity $500K → ~$960K. Net wealth-building: ~$4,176/mo. Monthly cost stays $3,700.</div>
           </div>
           <div class="tl-blk p2">
             <div class="tl-tag" style="color:#185FA5">Phase 2 — Year 8 to Retire</div>
@@ -774,7 +774,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="ch"><div class="ci" style="background:#e8f0fb">📈</div><div class="ct">403(b) Growth — Adjust Returns in Planner Tab</div></div>
         <div class="cb" style="padding:0;overflow-x:auto">
           <table class="tbl"><thead><tr><th>Year</th><th>Eric Age</th><th>Eric 403(b)</th><th>Karen 403(b)</th><th>Combined</th></tr></thead><tbody id="asset-tbody"></tbody></table>
-          <div class="note" style="padding:8px 12px">Eric: $155K · $30,080/yr (6% trad + 4% Roth + 6% employer on $188K) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
+          <div class="note" style="padding:8px 12px">Eric: $161K · $30,080/yr (6% trad + 4% Roth + 6% employer on $188K) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
         </div>
       </div>
       <div class="card">
@@ -993,7 +993,7 @@ function calcAssets(age) {
   const yr = age - 55;
   const re = (S.ericRet  || 9.31) / 100 / 12;
   const rk = (S.karenRet || 7.25) / 100 / 12;
-  let eb = 155000, kb = 220000;
+  let eb = 161000, kb = 245481;
   for (let y = 1; y <= yr; y++) {
     const retireYr = age - 55; // year they retire (= yr when calling calcAssets(age))
     const stillWorking = y < retireYr; // contributions stop IN the retirement year
@@ -1374,7 +1374,7 @@ function renderScenarioTable() {
 function renderAssetTable() {
   const tbody = document.getElementById('asset-tbody'); tbody.innerHTML = '';
   const years = [1,3,5,7,8,10,12,14,15];
-  let eb = 155000, kb = 220000, prevYr = 0;
+  let eb = 161000, kb = 245481, prevYr = 0;
   years.forEach(yr => {
     for (let y = prevYr+1; y <= yr; y++) {
       const re = S.ericRet/100/12, rk = S.karenRet/100/12;
