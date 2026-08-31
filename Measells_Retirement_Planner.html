@@ -562,7 +562,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="cb">
           <div class="sl">Annual gross compensation</div>
           <div class="wf" style="margin-bottom:12px">
-            <div class="wr"><div class="wl">Eric (salary $92K + HA $83K)</div><div class="wb"><div class="wbar" style="width:56%;background:#1b3a5c">$175,000</div></div><div class="wv">$175,000</div></div>
+            <div class="wr"><div class="wl">Eric (salary $92K + HA $83K)</div><div class="wb"><div class="wbar" style="width:56%;background:#1b3a5c">$175,000</div></div><div class="wv">$188,000</div></div>
             <div class="wr"><div class="wl">Karen (engineer salary)</div><div class="wb"><div class="wbar" style="width:44%;background:#546e8a">$138,000</div></div><div class="wv">$138,000</div></div>
             <div class="wr"><div class="wl fw6">Combined gross</div><div class="wb"><div class="wbar" style="width:100%;background:#0f2744">$313,000</div></div><div class="wv fw6">$313,000</div></div>
           </div>
@@ -636,7 +636,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="cg">
           <div class="sl-lbl">Employee contribution <span class="sl-v" id="lbl-epct">9%</span></div>
           <input type="range" min="1" max="23" step="1" value="9" id="sl-epct" oninput="updateContribs()">
-          <div class="hint" id="eric-contrib-hint">$15,750/yr employee · $10,500 employer match (6%) · ~$2,705 bonus contrib</div>
+          <div class="hint" id="eric-contrib-hint">$18,800/yr employee (6% trad + 4% Roth) · $11,280 employer match (6%) · ~$2,700 bonus contrib</div>
         </div>
         <div class="cp-stat"><span>Your contribution (monthly)</span><span class="fw6 text-navy" id="e-emp-mo">—</span></div>
         <div class="cp-stat"><span>Your contribution (annual)</span><span class="fw6" id="e-emp-yr">—</span></div>
@@ -652,7 +652,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         </div>
         <div class="flag fn" style="margin-top:10px" id="e-contrib-flag">
           <strong>Currently at 9% — maxing the match</strong>
-          Employer matches up to 6%. You also contribute 9% (+ 6% employer match) on your ~$18K gross annual bonus, adding ~$2,705/yr to the plan. IRS limit 2026: $23,500 employee ($31,000 with catch-up — eligible now at 55).
+          Employer matches up to 6%. Contribution splits 6% traditional + 4% Roth. Bonus: 10% + 6% employer on $15K = $2,400/yr to plan. IRS limit 2026: $31,000 with catch-up (age 55+). Current: $18,800 — $12,200 of headroom.
         </div>
       </div>
 
@@ -774,7 +774,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="ch"><div class="ci" style="background:#e8f0fb">📈</div><div class="ct">403(b) Growth — Adjust Returns in Planner Tab</div></div>
         <div class="cb" style="padding:0;overflow-x:auto">
           <table class="tbl"><thead><tr><th>Year</th><th>Eric Age</th><th>Eric 403(b)</th><th>Karen 403(b)</th><th>Combined</th></tr></thead><tbody id="asset-tbody"></tbody></table>
-          <div class="note" style="padding:8px 12px">Eric: $155K · $28,955/yr (regular $26,250 + bonus ~$2,705) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
+          <div class="note" style="padding:8px 12px">Eric: $155K · $30,080/yr (6% trad + 4% Roth + 6% employer on $188K) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
         </div>
       </div>
       <div class="card">
@@ -808,8 +808,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
             <div class="hint" id="tx-va-note" style="margin-top:8px">Virginia taxes retirement income at 5.75%. Moving saves significantly.</div>
           </div>
           <div class="cg">
-            <div class="sl-lbl">Karen's Roth distributions at retirement <span class="sl-v" id="lbl-roth">$500</span></div>
-            <input type="range" min="0" max="3000" step="100" value="500" id="sl-roth" oninput="setRoth()">
+            <div class="sl-lbl">Roth distributions at retirement (Eric + Karen) <span class="sl-v" id="lbl-roth">$950</span></div>
+            <input type="range" min="0" max="3000" step="100" value="950" id="sl-roth" oninput="setRoth()">
             <div class="hint">Karen's Roth TIAA balance generates tax-free income in retirement. Adjust based on how much her Roth portion grows.</div>
           </div>
         </div>
@@ -999,7 +999,7 @@ function calcAssets(age) {
     const stillWorking = y < retireYr; // contributions stop IN the retirement year
 
     // Eric 403(b): only while working
-    const eSal = 175000 * Math.pow(1 + (S.ericRaise||3)/100, y);
+    const eSal = 188000 * Math.pow(1 + (S.ericRaise||3)/100, y);
     const eEmp = stillWorking ? Math.min(eSal * (S.ericPct||9)/100, 23500 + ((55+y)>=50?7500:0)) : 0;
     const eMatch = stillWorking ? eSal * 0.06 : 0;
     const bonusGross = 18033;
@@ -1591,7 +1591,7 @@ function updateContribs() {
   document.getElementById('lbl-kraise').textContent = S.karenRaise + '%';
 
   // Eric calcs
-  const eSal = 175000;
+  const eSal = 188000;
   const eEmp = Math.min(eSal * S.ericPct/100, 31000);
   const eMatch = eSal * 0.06;  // 6% match capped
   const bonusGross = 18033;
@@ -1667,8 +1667,8 @@ function renderProjectionTable() {
     const eSal = 175000 * Math.pow(1 + S.ericRaise/100, y);
     const eEmp = Math.min(eSal * S.ericPct/100, 31000);
     const eMatch = eSal * 0.06;
-    const bonusGross = 18033;
-    const eBonus = bonusGross * (S.ericPct/100 + 0.06);
+    const bonusGross = 15000; // confirmed $15K gross bonus
+    const eBonus = bonusGross * ((S.ericPct||10)/100 + 0.06);
     const eTot = eEmp + eMatch + eBonus;
 
     const kSal = 138000 * Math.pow(1 + S.karenRaise/100, y);
@@ -1766,13 +1766,13 @@ function setStateTax(noTax) {
 }
 function setRoth() {
   S.rothMonthly = +document.getElementById('sl-roth').value;
-  document.getElementById('lbl-roth').textContent = fmt(S.rothMonthly) + '/mo';
+  document.getElementById('lbl-roth').textContent = fmt(S.rothMonthly || 950) + '/mo';
   renderAll();
 }
 
 // ── INIT ──
 S.ericPct=9; S.karenPct=12; S.ericRaise=3; S.karenRaise=2; S.addlInvests=[];
-S.noStateTax=false; S.rothMonthly=500; S.inhAmt=500000; S.inhYr=10;
+S.noStateTax=false; S.rothMonthly=950; S.inhAmt=500000; S.inhYr=10;
 S.inh2=true; S.inh2Amt=6250000; S.inh2Yr=5;
 S.ericRet=9.31; S.karenRet=7.25; S.ha=3500; S.inh=true; S.sell=true; S.ericAge=69;
 S.ericSSAge=70; S.karenSSAge=67; S.rentAmt=2600;
