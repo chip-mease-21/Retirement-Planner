@@ -215,7 +215,14 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
           <div class="cg">
             <div class="sl-lbl">Eric retires at age <span class="sl-v" id="lbl-era">69</span></div>
             <input type="range" min="60" max="70" value="69" id="sl-era" oninput="syncRetire()">
-            <div class="hint" id="retire-hint">Karen retires same year at age 63 · Year 14 from now</div>
+            <div class="hint" id="retire-hint">Year 14 from now (2040)</div>
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Karen retires at age <span class="sl-v" id="lbl-kra">63</span>
+              <button onclick="resetKarenRetire()" style="font-size:9px;padding:1px 8px;margin-left:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);cursor:pointer;color:var(--muted)">same year as Eric</button>
+            </div>
+            <input type="range" min="49" max="70" step="1" value="63" id="sl-kra" oninput="syncKarenRetire()">
+            <div class="hint" id="karen-retire-hint">Karen retires same year as Eric</div>
           </div>
 
           <div class="sl">Social Security claiming</div>
@@ -305,7 +312,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         </div>
         <!-- AFTER-TAX METRICS -->
         <div class="mets" style="margin-top:-8px">
-          <div class="met mn"><div class="ml">Net monthly (after tax)</div><div class="mv" id="m-net">—</div><div class="ms">what you actually spend</div><div class="mb"></div></div>
+          <div class="met mn"><div class="ml">Net at retirement /mo</div><div class="mv" id="m-net-yr1">—</div><div class="ms" id="m-net-yr1-sub">year 1 · after tax</div><div class="mb"></div></div>
+          <div class="met mn"><div class="ml">Net steady state /mo</div><div class="mv" id="m-net">—</div><div class="ms">all SS flowing · after tax</div><div class="mb"></div></div>
           <div class="met mr"><div class="ml">Est. taxes /mo</div><div class="mv" id="m-tax">—</div><div class="ms">fed + VA · see Tax tab</div><div class="mb"></div></div>
           <div class="met mg"><div class="ml">Effective tax rate</div><div class="mv" id="m-eff">—</div><div class="ms">of gross retirement income</div><div class="mb"></div></div>
           <div class="met mg"><div class="ml">Net surplus /mo</div><div class="mv" id="m-netsur">—</div><div class="ms">after tax vs $9K need</div><div class="mb"></div></div>
@@ -1007,11 +1015,13 @@ function calcAssets(age) {
     const eTotalAnnual = eEmp + eMatch + eBonus;
     for (let m = 0; m < 12; m++) eb = eb*(1+re) + eTotalAnnual/12;
 
-    // Karen 403(b): only while working (retires same year as Eric)
+    // Karen 403(b): stops when Karen retires (may be different year than Eric)
+    const karenRetireYr = (S.karenRetireAge || (49+(age-55))) - 49; // years from Karen age 49
+    const karenStillWorking = y < karenRetireYr;
     const kSal = 138000 * Math.pow(1 + (S.karenRaise||2)/100, y);
     const kPct = (S.karenPct||12)/100;
-    const kEmp = stillWorking ? Math.min(kSal * kPct, 23500 + ((49+y)>=50?7500:0)) : 0;
-    const kMatch = stillWorking ? kSal * 0.06 : 0; // UVA employer match also stops
+    const kEmp = karenStillWorking ? Math.min(kSal * kPct, 23500 + ((49+y)>=50?7500:0)) : 0;
+    const kMatch = karenStillWorking ? kSal * 0.06 : 0;
     const kTotalAnnual = kEmp + kMatch;
     for (let m = 0; m < 12; m++) kb = kb*(1+rk) + kTotalAnnual/12;
   }
@@ -1046,19 +1056,41 @@ function calcAssets(age) {
   let inh2 = 0;
   const inh2Amt = S.inh2Amt || 6250000;
   const inh2Yr  = S.inh2Yr  || 5;
-  if (S.inh2) {
-    if (yr >= inh2Yr) {
-      const yi2 = yr - inh2Yr, rm2 = (S.karenRet||7.25)/100/12, n2 = yi2*12;
-      inh2 = inh2Amt * Math.pow(1+rm2, n2);
-    } else { inh2 = inh2Amt; }
-  }
+  if (S.inh2 && yr >= inh2Yr) {
+    const yi2 = yr - inh2Yr, rm2 = (S.karenRet||7.25)/100/12, n2 = yi2*12;
+    inh2 = inh2Amt * Math.pow(1+rm2, n2);
+  } // if not yet received, inh2 stays 0
     return { eric:eb, karen:kb, home, inh, inh2, addl, total:eb+kb+home+inh+inh2+addl };
 }
 
 // ── SYNC RETIRE (Karen locked to Eric) ──
+function syncKarenRetire() {
+  S.karenRetireAge = +document.getElementById('sl-kra').value;
+  S.karenRetireManual = true;
+  const ericDefaultKaren = 49 + (S.ericAge - 55);
+  const diff = S.karenRetireAge - ericDefaultKaren;
+  document.getElementById('lbl-kra').textContent = 'age ' + S.karenRetireAge;
+  document.getElementById('karen-retire-hint').textContent =
+    diff === 0 ? 'Same year as Eric' :
+    diff < 0 ? 'Karen retires ' + Math.abs(diff) + ' yr' + (Math.abs(diff)>1?'s':'') + ' before Eric' :
+               'Karen retires ' + diff + ' yr' + (diff>1?'s':'') + ' after Eric';
+  renderAll();
+}
+
+function resetKarenRetire() {
+  S.karenRetireManual = false;
+  const karenDefault = 49 + (S.ericAge - 55);
+  S.karenRetireAge = karenDefault;
+  document.getElementById('sl-kra').value = karenDefault;
+  document.getElementById('lbl-kra').textContent = 'age ' + karenDefault;
+  document.getElementById('karen-retire-hint').textContent = 'Same year as Eric';
+  renderAll();
+}
+
 function syncRetire() {
   S.ericAge = +document.getElementById('sl-era').value;
-  const karenAge = 49 + (S.ericAge - 55);
+  const karenAge = S.karenRetireAge || (49 + (S.ericAge - 55));
+  const karenRetireSameYear = !S.karenRetireManual || karenAge === (49 + (S.ericAge - 55));
   document.getElementById('lbl-era').textContent = S.ericAge;
   document.getElementById('retire-hint').textContent =
     `Karen retires same year at age ${karenAge} · Year ${S.ericAge-55} from now (${2026+(S.ericAge-55)})`;
@@ -1186,7 +1218,8 @@ function renderAll() {
   const assets = calcAssets(S.ericAge);
   const port   = assets.total * 0.04 / 12;
   S.ha = S.ha || 3500;  // guard against undefined
-  const karenAge = 49 + (S.ericAge - 55);
+  const karenAge = S.karenRetireAge || (49 + (S.ericAge - 55));
+  const karenRetireSameYear = !S.karenRetireManual || karenAge === (49 + (S.ericAge - 55));
 
   // SS timing — year 1 vs steady state
   const ss = calcSSIncome(S.ericAge, S.ericSSAge, S.karenSSAge, port, S.ha);
@@ -1238,6 +1271,16 @@ function renderAll() {
     document.getElementById('m-tax').textContent = fmt(tax.total);
     document.getElementById('m-eff').textContent = (tax.effectiveRate * 100).toFixed(1) + '%';
     document.getElementById('m-netsur').textContent = fmt(netSurplus);
+  }
+  // Net at retirement (year 1) — before SS fully flowing
+  if (document.getElementById('m-net-yr1')) {
+    const netYr1 = taxYr1.netMonthly;
+    document.getElementById('m-net-yr1').textContent = fmt(netYr1);
+    document.getElementById('m-net-yr1').style.color = netYr1 < 9545 ? '#c0392b' : 'var(--green)';
+    document.getElementById('m-net-yr1-sub').textContent =
+      ss.yrsToFull > 0
+        ? 'before SS · full income at Eric age ' + ss.ericAgeAtFull
+        : 'all SS flowing from day 1';
   }
 
   // Tax breakdown panel
@@ -1774,7 +1817,7 @@ function setRoth() {
 S.ericPct=9; S.karenPct=12; S.ericRaise=3; S.karenRaise=2; S.addlInvests=[];
 S.noStateTax=false; S.rothMonthly=950; S.inhAmt=500000; S.inhYr=10;
 S.inh2=true; S.inh2Amt=6250000; S.inh2Yr=5;
-S.ericRet=9.31; S.karenRet=7.25; S.ha=3500; S.inh=true; S.sell=true; S.ericAge=69;
+S.ericRet=9.31; S.karenRet=7.25; S.ha=3500; S.inh=true; S.sell=true; S.ericAge=69; S.karenRetireAge=63; S.karenRetireManual=false;
 S.ericSSAge=70; S.karenSSAge=67; S.rentAmt=2600;
 
 // Attach inheritance sliders via addEventListener (more reliable than oninput on hidden elements)
@@ -1819,4 +1862,8 @@ updateContribs();
 update();
 </script>
 </body>
-</html>
+</html>  if (S.inh && yr >= inhYr) {
+    const yi = yr - inhYr, rm = (S.karenRet||7.25)/100/12, n = yi*12;
+    inh = inhAmt * Math.pow(1+rm, n);
+  }
+
