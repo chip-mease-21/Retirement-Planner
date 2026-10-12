@@ -270,9 +270,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
             <div id="inh2-detail" style="margin-top:10px">
               <div class="sl-lbl" style="margin-bottom:5px">Karen's share <span class="sl-v" id="lbl-inh2-amt">$6.25M</span></div>
               <input type="range" min="2500000" max="10000000" step="250000" value="6250000" id="sl-inh2-amt">
-              <div class="sl-lbl" style="margin-top:10px;margin-bottom:5px">Received at year <span class="sl-v" id="lbl-inh2-yr">5</span> (Eric age <span id="lbl-inh2-age">60</span>)</div>
-              <input type="range" min="1" max="14" step="1" value="5" id="sl-inh2-yr">
-              <div class="hint" style="margin-top:5px" id="inh2-hint">$6.25M received at Eric age 60 · invested 9 yrs to age 69 · grows to ~$9.4M</div>
+              <div class="sl-lbl" style="margin-top:10px;margin-bottom:5px">Received at year <span class="sl-v" id="lbl-inh2-yr">10</span> (Eric age <span id="lbl-inh2-age">65</span>)</div>
+              <input type="range" min="1" max="14" step="1" value="10" id="sl-inh2-yr">
+              <div class="hint" style="margin-top:5px" id="inh2-hint">$6.25M received at Eric age 65 · invested 4 yrs to age 69 · grows to ~$7.9M</div>
             </div>
           </div>
           <div class="cg">
@@ -366,7 +366,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <table class="tbl"><thead><tr>
           <th>Eric Age</th><th>Year</th><th>Karen Age</th><th>Liquid Assets</th><th>Port /mo</th><th>HA /mo</th><th>Eric SS</th><th>Karen SS</th><th>At retirement</th><th>Full income</th><th>Tax /mo</th><th>Net /mo</th><th>vs $9K</th>
         </tr></thead><tbody id="stbody"></tbody></table>
-        <div class="note" style="padding:8px 14px">★ green = age 69 sweet spot · Blue = your selected age · Karen always retires same year as Eric. ⚡ orange "At retirement" = SS not yet flowing on day 1 · "Full income" = once all SS sources active.</div>
+        <div class="note" style="padding:8px 14px">★ green = age 69 sweet spot · Blue = your selected age. ⚡ SS not yet flowing day 1. * "At retirement" excludes inheritances arriving that same year — those show in Full Income.</div>
       </div>
     </div>
   </div>
@@ -1261,6 +1261,12 @@ function renderAll() {
     gapDesc = 'waiting: ' + parts.join(' · ');
   }
   document.getElementById('m-yr1-sub').textContent = gapDesc;
+  // Note same-year inheritance in year-1 metric
+  const inh1SameYr = S.inh  && (S.inhYr ||10) === (S.ericAge-55);
+  const inh2SameYr = S.inh2 && (S.inh2Yr||10) === (S.ericAge-55);
+  if ((inh1SameYr || inh2SameYr) && document.getElementById('m-yr1')) {
+    document.getElementById('m-yr1-sub').textContent += ' (incl. inheritance arriving this year)';
+  }
   if (document.getElementById('m-yr1')) document.getElementById('m-yr1').style.color = ss.yrsToFull > 0 ? 'var(--amber)' : 'var(--green)';
   document.getElementById('m-liq').textContent = fmtM(assets.total);
   document.getElementById('m-sur').textContent = fmt(surplus);
@@ -1382,8 +1388,13 @@ function renderScenarioTable() {
       const kSS  = KAREN_SS[S.karenSSAge] || 3567;
       const karenAge = 49 + (age - 55);
       const ss2  = calcSSIncome(age, S.ericSSAge, S.karenSSAge, port, S.ha);
-      const roth = S.rothMonthly || 500;
+      const roth = S.rothMonthly || 950;
       const tax2 = calcTax(port, S.ha, ss2.steady.eSS, ss2.steady.kSS, roth);
+      // For AT RETIREMENT column: show income excluding same-year inheritances
+      const sameYrInh = ((S.inh && S.inhYr==(age-55) ? (S.inhAmt||500000) : 0) +
+                         (S.inh2 && S.inh2Yr==(age-55) ? (S.inh2Amt||6250000) : 0));
+      const portPreInh = Math.max(0, (a.total - sameYrInh) * 0.04/12);
+      const yr1IncomePreInh = portPreInh + (S.ha||3500) + ss2.year1.eSS + ss2.year1.kSS;
       const netSurp  = tax2.netMonthly - LIFESTYLE;
       const sc       = netSurp > 0 ? '#27ae60' : '#c0392b';
       const yr1Color = ss2.yrsToFull > 0 ? '#e67e22' : '#27ae60';
@@ -1400,7 +1411,7 @@ function renderScenarioTable() {
         `<td>${fmt(S.ha)}</td>` +
         `<td>${fmt(eSS)}</td>` +
         `<td>${fmt(kSS)}</td>` +
-        `<td style="font-weight:600;color:${yr1Color}" title="${ss2.yrsToFull>0?'SS gap: '+(ss2.yrsToEricSS>0?'Eric SS age '+S.ericSSAge+' ':'')+(ss2.yrsToKarenSS>0?'Karen SS age '+ss2.karenAgeAtFull:''):'All SS flowing'}">${fmt(ss2.year1.total)}${yr1Note}</td>` +
+        `<td style="font-weight:600;color:${yr1Color}" title="${sameYrInh>0?'Excl. same-yr inheritance ($'+Math.round(sameYrInh/1000)+'K). ':''} ${ss2.yrsToFull>0?'SS starts Eric age '+ss2.ericAgeAtFull:''}">${fmt(yr1IncomePreInh)}${yr1Note}${sameYrInh>0?'*':''}</td>` +
         `<td style="font-weight:700;color:#1b3a5c">${fmt(ss2.steady.total)}</td>` +
         `<td style="color:#c0392b">−${fmt(tax2.total)}</td>` +
         `<td style="font-weight:700;color:#27ae60">${fmt(tax2.netMonthly)}</td>` +
@@ -1816,7 +1827,7 @@ function setRoth() {
 // ── INIT ──
 S.ericPct=9; S.karenPct=12; S.ericRaise=3; S.karenRaise=2; S.addlInvests=[];
 S.noStateTax=false; S.rothMonthly=950; S.inhAmt=500000; S.inhYr=10;
-S.inh2=true; S.inh2Amt=6250000; S.inh2Yr=5;
+S.inh2=true; S.inh2Amt=6250000; S.inh2Yr=10;
 S.ericRet=9.31; S.karenRet=7.25; S.ha=3500; S.inh=true; S.sell=true; S.ericAge=69; S.karenRetireAge=63; S.karenRetireManual=false;
 S.ericSSAge=70; S.karenSSAge=67; S.rentAmt=2600;
 
