@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<!-- VERSION 3.1 - New table columns, Karen retire slider, inh fix - 2026-10-12 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Measells Retirement Planner v3.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f2744;--navy-l:#1b3a5c;--gold:#c9a84c;--gold-l:#e8c97a;
+  --cream:#f8f5ef;--white:#fff;--green:#27ae60;--green-l:#eaf7f0;
+  --red:#c0392b;--red-l:#fdf0ef;--amber:#e67e22;--amber-l:#fef6ec;
+  --slate:#546e8a;--slate-l:#edf2f7;--text:#1a2332;--muted:#5a6a7a;
+  --border:#dce4ed;--sh:0 2px 12px rgba(15,39,68,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);}
+/* HEADER */
+.hdr{background:var(--navy);color:#fff;padding:24px 36px 20px;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border:1px solid rgba(201,168,76,.18);border-radius:50%;}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;}
+.hdr-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;}
+.hdr-sub{color:rgba(255,255,255,.45);font-size:11px;margin-top:3px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:3px 10px;font-size:10px;color:var(--gold-l);font-weight:600;}
+/* LAYOUT */
+.wrap{max-width:1280px;margin:0 auto;padding:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr;}}
+/* CARD */
+.card{background:var(--white);border-radius:10px;border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden;}
+.ch{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.ct{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:var(--navy);}
+.ci{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.cb{padding:16px;}
+/* CONTROLS */
+.sl-lbl{display:flex;justify-content:space-between;font-size:11px;font-weight:500;margin-bottom:5px;}
+.sl-v{background:var(--slate-l);padding:2px 8px;border-radius:12px;font-weight:700;color:var(--navy);font-size:11px;min-width:68px;text-align:center;}
+input[type=range]{width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer;-webkit-appearance:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--navy);border:2px solid #fff;box-shadow:0 1px 4px rgba(15,39,68,.3);cursor:pointer;transition:transform .15s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+.hint{font-size:10px;color:var(--muted);margin-top:3px;}
+.cg{margin-bottom:12px;}
+/* TOGGLES */
+.tr{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.tog{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--white);font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
+.tog:hover{border-color:var(--navy);color:var(--navy);}
+.ton{background:var(--navy);border-color:var(--navy);color:#fff;}
+.tog-g{background:var(--green);border-color:var(--green);color:#fff;}
+.tog-r{background:var(--red);border-color:var(--red);color:#fff;}
+/* METRICS */
+.mets{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:900px){.mets{grid-template-columns:1fr 1fr;}}
+.met{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:11px 13px;position:relative;overflow:hidden;}
+.ml{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.mv{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;line-height:1;}
+.ms{font-size:10px;color:var(--muted);margin-top:3px;}
+.mb{position:absolute;bottom:0;left:0;right:0;height:3px;}
+.mg .mv{color:var(--green);}.mg .mb{background:var(--green);}
+.mn .mv{color:var(--navy);}.mn .mb{background:var(--navy);}
+.mgo .mv{color:var(--gold);}.mgo .mb{background:var(--gold);}
+.ma .mv{color:var(--amber);}.ma .mb{background:var(--amber);}
+.mr .mv{color:var(--red);}.mr .mb{background:var(--red);}
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--slate-l);padding:3px;border-radius:9px;margin-bottom:16px;}
+.tab{flex:1;padding:6px 8px;border-radius:7px;font-size:10px;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);transition:all .15s;border:none;background:none;}
+.tab.active{background:var(--white);color:var(--navy);box-shadow:0 1px 4px rgba(15,39,68,.12);}
+.tp{display:none;}.tp.active{display:block;}
+/* STACK BAR */
+.stk{display:flex;height:26px;border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.seg{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;transition:width .4s;overflow:hidden;min-width:0;}
+.seg span{white-space:nowrap;padding:0 5px;overflow:hidden;text-overflow:ellipsis;}
+.leg{display:flex;flex-wrap:wrap;gap:6px;}
+.li{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--muted);}
+.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.tbl th{background:var(--navy);color:#fff;padding:7px 8px;text-align:right;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.tbl th:first-child{text-align:left;border-radius:5px 0 0 0;}
+.tbl th:last-child{border-radius:0 5px 0 0;}
+.tbl td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;}
+.tbl td:first-child{text-align:left;font-weight:600;}
+.tbl tr:hover td{background:var(--slate-l);}
+.tbl tr.hl td{background:var(--green-l);font-weight:600;}
+.tbl tr.sel td{background:#e8f4fd;border-left:3px solid var(--navy);}
+.tbl tr.sel td:first-child{padding-left:5px;}
+/* FLAGS */
+.flag{border-radius:7px;padding:9px 12px;margin-bottom:7px;font-size:11px;line-height:1.5;border-left:3px solid;}
+.fg{background:var(--green-l);border-color:var(--green);}
+.fa{background:var(--amber-l);border-color:var(--amber);}
+.fr{background:var(--red-l);border-color:var(--red);}
+.fn{background:var(--slate-l);border-color:var(--navy);}
+.flag strong{display:block;font-size:11px;margin-bottom:2px;}
+.fg strong{color:#1a6b3c;}.fa strong{color:#9a5000;}.fr strong{color:#8b1a10;}.fn strong{color:var(--navy);}
+/* WATERFALL */
+.wf{display:flex;flex-direction:column;gap:5px;}
+.wr{display:flex;align-items:center;gap:7px;font-size:11px;}
+.wl{width:175px;color:var(--muted);flex-shrink:0;line-height:1.3;}
+.wb{flex:1;height:19px;background:var(--border);border-radius:3px;overflow:hidden;}
+.wbar{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:5px;font-size:9px;font-weight:700;color:#fff;transition:width .5s;}
+.wv{width:76px;text-align:right;font-weight:600;font-size:11px;flex-shrink:0;}
+/* SS ROWS */
+.ssr{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.ssr:last-child{border-bottom:none;}
+.ssa{width:26px;font-weight:700;color:var(--navy);font-size:12px;}
+.ssb{flex:1;background:var(--border);border-radius:3px;height:6px;overflow:hidden;}
+.ssbf{height:100%;border-radius:3px;transition:width .4s;}
+.ssv{width:56px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;}
+/* BADGES */
+.bdg{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;}
+.bg{background:var(--green-l);color:#1a6b3c;}
+.bn{background:var(--slate-l);color:var(--navy);}
+.br{background:var(--red-l);color:var(--red);}
+.ba{background:var(--amber-l);color:#9a5000;}
+.gold-b{background:#fef9ec;color:#7a5c00;border:1px solid var(--gold);}
+/* SECTION LABEL */
+.sl{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--slate);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.sl::after{content:'';flex:1;height:1px;background:var(--border);}
+.div{border:none;border-top:1px solid var(--border);margin:10px 0;}
+.note{font-size:10px;color:var(--muted);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.fw6{font-weight:600;}
+
+/* ===== HOUSING COMPARISON ===== */
+.now-vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:900px){.now-vs{grid-template-columns:1fr;}}
+.now-card{border-radius:10px;padding:16px;border:2px solid;}
+.now-card.today{background:#fff8e7;border-color:var(--amber);}
+.now-card.sell{background:var(--green-l);border-color:var(--green);}
+.nc-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;margin-bottom:8px;}
+.nc-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.nc-big{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;line-height:1;margin-bottom:2px;}
+.nc-sub{font-size:10px;color:var(--muted);margin-bottom:12px;}
+.nc-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.07);font-size:11px;}
+.nc-row:last-child{border-bottom:none;}
+.nc-val{font-weight:600;}
+.net-line{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 0;border-top:2px solid rgba(0,0,0,.1);margin-top:6px;}
+.net-lbl{font-size:11px;font-weight:700;}
+.net-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;}
+
+/* RENT SELECTOR */
+.rent-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+@media(max-width:900px){.rent-grid{grid-template-columns:1fr 1fr;}}
+.rc{border-radius:8px;padding:12px;border:2px solid var(--border);cursor:pointer;transition:all .2s;background:var(--white);}
+.rc:hover{border-color:var(--navy);}
+.rc.rsel{border-color:var(--green);background:var(--green-l);}
+.rc.rbad{border-color:var(--red);background:var(--red-l);}
+.rc-name{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.rc-rent{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;line-height:1;}
+.rc-sub{font-size:9px;color:var(--muted);margin-bottom:8px;}
+.rc-stat{display:flex;justify-content:space-between;font-size:9px;padding:2px 0;}
+
+/* NET COST BAR CHART */
+.ncb-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px;}
+.ncb-lbl{width:200px;flex-shrink:0;color:var(--muted);}
+.ncb-track{flex:1;background:var(--border);border-radius:4px;height:22px;position:relative;overflow:hidden;}
+.ncb-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:9px;font-weight:700;color:#fff;white-space:nowrap;transition:width .4s;}
+.ncb-val{width:90px;text-align:right;font-weight:700;flex-shrink:0;}
+
+/* TIMELINE */
+.timeline{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0;}
+.tl-blk{border-radius:8px;padding:12px;border:1px solid;}
+.tl-blk.p1{background:var(--green-l);border-color:#a8e6c2;}
+.tl-blk.p2{background:#e8f4fd;border-color:#b5d4f4;}
+.tl-blk.p3{background:var(--slate-l);border-color:var(--border);}
+.tl-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.tl-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:3px;}
+.tl-desc{font-size:10px;color:var(--muted);line-height:1.4;}
+
+/* RENT SLIDER */
+.rent-slider-wrap{background:var(--slate-l);border-radius:8px;padding:12px 14px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-title">Measells Family Retirement Planner</div>
+      <div class="hdr-sub">Eric (Chip) age 55 · Karen age 49 · Confirmed: SSA statements, paystubs & Monarch Money · May 26, 2026 · <span style="color:var(--gold-l)">v2.1</span></div>
+    </div>
+    <div class="chips">
+      <span class="chip">Eric SS @ 70: $3,989 ✓</span>
+      <span class="chip">Karen SS @ 67: $3,567 ✓</span>
+      <span class="chip">Take-home: $20,054/mo ✓</span>
+      <span class="chip">403(b) today: $375K ✓</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('planner',this)">🎛 Planner</button>
+    <button class="tab" onclick="showTab('housing',this)">🏠 Housing Decision</button>
+    <button class="tab" onclick="showTab('income',this)">💰 Income</button>
+    <button class="tab" onclick="showTab('savings',this)">💸 Savings & Contributions</button>
+    <button class="tab" onclick="showTab('assets',this)">📈 Assets</button>
+    <button class="tab" onclick="showTab('tax',this)">🧾 Taxes</button>
+    <button class="tab" onclick="showTab('ss',this)">🏛 Social Security</button>
+    <button class="tab" onclick="showTab('actions',this)">✅ Actions</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 1 — PLANNER
+  ══════════════════════════════════════════ -->
+  <div id="tab-planner" class="tp active">
+    <div class="g2">
+      <!-- CONTROLS -->
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#e8f0fb">🎛</div><div class="ct">Retirement Controls</div></div>
+        <div class="cb">
+
+          <div class="sl">Retirement timing</div>
+          <div class="cg">
+            <div class="sl-lbl">Eric retires at age <span class="sl-v" id="lbl-era">69</span></div>
+            <input type="range" min="60" max="70" value="69" id="sl-era" oninput="syncRetire()">
+            <div class="hint" id="retire-hint">Year 14 from now (2040)</div>
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Karen retires at age <span class="sl-v" id="lbl-kra">63</span>
+              <button onclick="resetKarenRetire()" style="font-size:9px;padding:1px 8px;margin-left:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);cursor:pointer;color:var(--muted)">same year as Eric</button>
+            </div>
+            <input type="range" min="49" max="70" step="1" value="63" id="sl-kra" oninput="syncKarenRetire()">
+            <div class="hint" id="karen-retire-hint">Karen retires same year as Eric</div>
+          </div>
+
+          <div class="sl">Social Security claiming</div>
+          <div class="cg">
+            <div class="sl-lbl">Eric claims SS at <span class="sl-v" id="lbl-ess">70</span></div>
+            <div class="tr">
+              <button class="tog" onclick="setEricSS(67)" id="ess-67">67 FRA</button>
+              <button class="tog" onclick="setEricSS(68)" id="ess-68">68</button>
+              <button class="tog" onclick="setEricSS(69)" id="ess-69">69</button>
+              <button class="tog ton" onclick="setEricSS(70)" id="ess-70">70 ★ Max</button>
+            </div>
+            <div class="hint" id="ess-note">$3,989/mo — maximum benefit. Breakeven age 77.</div>
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Karen claims SS at <span class="sl-v" id="lbl-kss">67</span></div>
+            <div class="tr">
+              <button class="tog tog-r" onclick="setKarenSS(63)" id="kss-63">63 ⚠</button>
+              <button class="tog" onclick="setKarenSS(65)" id="kss-65">65</button>
+              <button class="tog tog-g ton" onclick="setKarenSS(67)" id="kss-67">67 ★ Best</button>
+              <button class="tog" onclick="setKarenSS(70)" id="kss-70">70 Max</button>
+            </div>
+            <div class="hint" id="kss-note">$3,567/mo at 67. Claiming at 63 costs $12,216/yr forever.</div>
+          </div>
+
+          <div class="sl">Asset assumptions</div>
+          <div class="cg">
+            <div class="sl-lbl">Eric 403(b) return — Empower <span class="sl-v" id="lbl-eret">9.31%</span></div>
+            <input type="range" min="5" max="12" step="0.25" value="9.31" id="sl-eret" oninput="update()">
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Karen + invested assets return <span class="sl-v" id="lbl-kret">7.25%</span></div>
+            <input type="range" min="4" max="11" step="0.25" value="7.25" id="sl-kret" oninput="update()">
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Housing allowance (tax-free) <span class="sl-v" id="lbl-ha">$3,500</span></div>
+            <input type="range" min="0" max="7000" step="500" value="3500" id="sl-ha" oninput="update()">
+          </div>
+          <div style="background:#e8f4fd;border-radius:8px;padding:12px 14px;margin-bottom:10px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#1b3a5c;margin-bottom:10px">Karen's Father's Estate</div>
+            <div class="sl-lbl">Include estate inheritance <span class="sl-v" id="lbl-inh2">Include</span></div>
+            <div class="tr">
+              <button class="tog ton" onclick="setInh2(true)"  id="inh2-y">Include</button>
+              <button class="tog"     onclick="setInh2(false)" id="inh2-n">Exclude</button>
+            </div>
+            <div id="inh2-detail" style="margin-top:10px">
+              <div class="sl-lbl" style="margin-bottom:5px">Karen's share <span class="sl-v" id="lbl-inh2-amt">$6.25M</span></div>
+              <input type="range" min="2500000" max="10000000" step="250000" value="6250000" id="sl-inh2-amt">
+              <div class="sl-lbl" style="margin-top:10px;margin-bottom:5px">Received at year <span class="sl-v" id="lbl-inh2-yr">10</span> (Eric age <span id="lbl-inh2-age">65</span>)</div>
+              <input type="range" min="1" max="14" step="1" value="10" id="sl-inh2-yr">
+              <div class="hint" style="margin-top:5px" id="inh2-hint">$6.25M received at Eric age 65 · invested 4 yrs to age 69 · grows to ~$7.9M</div>
+            </div>
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Sell home at year 8 <span class="sl-v" id="lbl-sell">Yes</span></div>
+            <div class="tr">
+              <button class="tog ton" onclick="setSell(true)"  id="sell-y">Sell + invest $599K</button>
+              <button class="tog"     onclick="setSell(false)" id="sell-n">Keep home</button>
+            </div>
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Inheritance <span class="sl-v" id="lbl-inh">Include</span></div>
+            <div class="tr">
+              <button class="tog ton" onclick="setInh(true)"  id="inh-y">Include</button>
+              <button class="tog"     onclick="setInh(false)" id="inh-n">Exclude</button>
+            </div>
+          </div>
+          <div class="cg" id="inh-detail" style="background:var(--slate-l);border-radius:8px;padding:10px 12px;margin-top:-6px">
+            <div class="sl-lbl" style="margin-bottom:8px">Inheritance amount <span class="sl-v" id="lbl-inh-amt">$500K</span></div>
+            <input type="range" min="0" max="1000000" step="25000" value="500000" id="sl-inh-amt">
+            <div class="sl-lbl" style="margin-top:10px;margin-bottom:0">Received at year <span class="sl-v" id="lbl-inh-yr">10</span> (Eric age <span id="lbl-inh-age">65</span>)</div>
+            <input type="range" min="1" max="14" step="1" value="10" id="sl-inh-yr">
+            <div class="hint" style="margin-top:4px" id="inh-hint">$500K received at Eric age 65 · invested <span id="inh-invest-yrs">4</span> yrs to retirement · grows to ~<span id="inh-fv">$661K</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div>
+        <!-- GROSS METRICS -->
+        <div class="mets">
+          <div class="met mg"><div class="ml">Steady state /mo</div><div class="mv" id="m-tot">—</div><div class="ms" id="m-tot-sub">all SS flowing</div><div class="mb"></div></div>
+          <div class="met ma"><div class="ml">Year 1 income /mo</div><div class="mv" id="m-yr1">—</div><div class="ms" id="m-yr1-sub">at retirement date</div><div class="mb"></div></div>
+          <div class="met mn"><div class="ml">Annual income</div><div class="mv" id="m-ann">—</div><div class="ms">steady state × 12</div><div class="mb"></div></div>
+          <div class="met mgo"><div class="ml">Liquid assets</div><div class="mv" id="m-liq">—</div><div class="ms">at retirement</div><div class="mb"></div></div>
+          <div class="met mg"><div class="ml">Max income /mo</div><div class="mv" id="m-max">—</div><div class="ms" id="m-max-sub">age 70, all SS, full portfolio</div><div class="mb"></div></div>
+          <div class="met ma"><div class="ml">Gross surplus /mo</div><div class="mv" id="m-sur">—</div><div class="ms">vs $9K before tax</div><div class="mb"></div></div>
+        </div>
+        <!-- AFTER-TAX METRICS -->
+        <div class="mets" style="margin-top:-8px">
+          <div class="met mn"><div class="ml">Net at retirement /mo</div><div class="mv" id="m-net-yr1">—</div><div class="ms" id="m-net-yr1-sub">year 1 · after tax</div><div class="mb"></div></div>
+          <div class="met mn"><div class="ml">Net steady state /mo</div><div class="mv" id="m-net">—</div><div class="ms">all SS flowing · after tax</div><div class="mb"></div></div>
+          <div class="met mr"><div class="ml">Est. taxes /mo</div><div class="mv" id="m-tax">—</div><div class="ms">fed + VA · see Tax tab</div><div class="mb"></div></div>
+          <div class="met mg"><div class="ml">Effective tax rate</div><div class="mv" id="m-eff">—</div><div class="ms">of gross retirement income</div><div class="mb"></div></div>
+          <div class="met mg"><div class="ml">Net surplus /mo</div><div class="mv" id="m-netsur">—</div><div class="ms">after tax vs $9K need</div><div class="mb"></div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px">
+          <div class="ch"><div class="ci" style="background:#eaf7f0">📊</div><div class="ct">Income Composition at Retirement</div></div>
+          <div class="cb">
+            <div class="stk" id="stk">
+              <div class="seg" id="sp" style="background:#1b3a5c"><span id="spl">Portfolio</span></div>
+              <div class="seg" id="sh" style="background:#27ae60"><span id="shl">HA</span></div>
+              <div class="seg" id="se" style="background:#c9a84c"><span id="sel">Eric SS</span></div>
+              <div class="seg" id="sk" style="background:#546e8a"><span id="skl">Karen SS</span></div>
+            </div>
+            <div class="leg" style="margin-bottom:10px">
+              <div class="li"><div class="ld" style="background:#1b3a5c"></div>Portfolio (4%)</div>
+              <div class="li"><div class="ld" style="background:#27ae60"></div>Housing allowance <span class="bdg bg" style="margin-left:2px">tax-free</span></div>
+              <div class="li"><div class="ld" style="background:#c9a84c"></div>Eric SS</div>
+              <div class="li"><div class="ld" style="background:#546e8a"></div>Karen SS</div>
+            </div>
+            <div class="div"></div>
+            <div style="font-size:11px">
+              <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span class="muted">Portfolio (4% of liquid)</span><span class="fw6" id="br-p">—</span></div>
+              <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Housing allowance <span class="bdg bg">tax-free</span></span><span class="fw6" id="br-h">—</span></div>
+              <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Eric SS <span class="bdg bn" id="br-eb">at 70</span></span><span class="fw6" id="br-e">—</span></div>
+              <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Karen SS <span class="bdg bn" id="br-kb">at 67</span></span><span class="fw6" id="br-k">—</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0 0;font-size:12px;border-top:1px solid var(--border);margin-top:6px">
+              <span style="color:var(--muted);font-size:11px">Year 1 at retirement <span id="br-yr1-note" style="color:var(--amber)"></span></span>
+              <span style="font-weight:700;color:var(--amber)" id="br-yr1">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px">
+              <span class="fw6" style="color:var(--navy)">Steady state (all SS active)</span>
+              <span style="font-size:15px;font-weight:700;color:var(--green)" id="br-tot">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ch"><div class="ci" style="background:#fef9ec">💡</div><div class="ct">Key Insight</div></div>
+          <div class="cb" id="insight" style="font-size:11px;line-height:1.6"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENARIO TABLE -->
+    <div class="card" style="margin-top:14px">
+      <div class="ch"><div class="ci" style="background:#e8f0fb">📋</div><div class="ct">All Scenarios — Eric 60–70 · Karen retirement age adjustable</div></div>
+      <div class="cb" style="padding:0;overflow-x:auto">
+        <table class="tbl"><thead><tr>
+          <th>Eric Age</th><th>Karen Age</th><th>Liquid Assets</th><th>Yr 1 Income*</th><th>Full Income†</th><th>Tax /mo†</th><th>Net Yr 1*</th><th>Net Steady†</th><th>vs $9,545</th>
+        </tr></thead><tbody id="stbody"></tbody></table>
+        <div class="note" style="padding:8px 14px">★ = age 69 sweet spot · Blue = selected age · ⚡ = SS not yet flowing · † = same-year inheritance excluded from Yr 1 · *Full Income & Net Steady = all SS active · Net Yr 1 = after tax at retirement before SS · vs $9,545 = net steady surplus above lifestyle</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 2 — HOUSING DECISION
+  ══════════════════════════════════════════ -->
+  <div id="tab-housing" class="tp">
+
+    <!-- NOW vs SELL side by side -->
+    <div class="sl" style="margin-bottom:12px">Where you stand today vs. selling at year 8</div>
+    <div class="now-vs">
+
+      <!-- TODAY — KEEP HOME -->
+      <div class="now-card today">
+        <div><span class="nc-badge" style="background:#fff3cd;color:#9a5000">TODAY — KEEP HOME</span></div>
+        <div class="nc-title">Current mortgage · 3% rate · 25 yrs left</div>
+        <div class="nc-big" style="color:var(--amber)">$3,700</div>
+        <div class="nc-sub">gross monthly housing cost</div>
+
+        <div class="nc-row"><span>Mortgage P + I</span><span class="nc-val">$2,134</span></div>
+        <div class="nc-row"><span>Property tax</span><span class="nc-val">$656/mo</span></div>
+        <div class="nc-row"><span>Insurance + maintenance</span><span class="nc-val">~$910/mo</span></div>
+        <div class="nc-row"><span style="color:var(--green)">Principal paydown (month 1)</span><span class="nc-val" style="color:var(--green)">−$1,009</span></div>
+        <div class="nc-row"><span style="color:var(--green)">Home appreciation (4%/yr ÷ 12)</span><span class="nc-val" style="color:var(--green)">−$3,167</span></div>
+        <div class="nc-row"><span style="color:var(--green)">Total wealth-building benefit</span><span class="nc-val" style="color:var(--green)">−$4,176/mo</span></div>
+        <div class="net-line">
+          <span class="net-lbl">Net effective cost</span>
+          <span class="net-val" style="color:var(--green)">−$476/mo</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5">The home is building $4,176/month in wealth (equity + appreciation), making your effective housing cost <em>negative</em> right now. <strong>Do not pay off early — your 3% rate is a gift.</strong></div>
+        <div class="div"></div>
+        <div class="nc-row"><span>Home value at yr 15 (4% growth)</span><span class="nc-val">$1.71M</span></div>
+        <div class="nc-row"><span>Loan balance at yr 15</span><span class="nc-val">$221K</span></div>
+        <div class="nc-row"><span>Equity at yr 15 (illiquid)</span><span class="nc-val fw6" style="color:var(--amber)">$1.49M</span></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">Rich on paper — but illiquid. Can't draw $5K/month from it in retirement without selling or a reverse mortgage.</div>
+      </div>
+
+      <!-- SELL AT YEAR 8 -->
+      <div class="now-card sell">
+        <div><span class="nc-badge" style="background:#eaf7f0;color:#1a6b3c">★ SELL AT YEAR 8 (Eric age 63) · capped at $1M</span></div>
+        <div class="nc-title">Rent 2BR at $2,600 · invest $599K proceeds</div>
+        <div class="nc-big" style="color:var(--green)">$2,600</div>
+        <div class="nc-sub">gross monthly rent</div>
+
+        <div class="nc-row"><span>Monthly rent</span><span class="nc-val">$2,600</span></div>
+        <div class="nc-row"><span>No property tax, maintenance, insurance</span><span class="nc-val" style="color:var(--green)">$0</span></div>
+        <div class="nc-row"><span style="color:var(--green)">Investment return on $599K @ 7.25%</span><span class="nc-val" style="color:var(--green)">−$3,621/mo</span></div>
+        <div class="nc-row"><span style="color:var(--green)">Monthly savings vs today's $3,700</span><span class="nc-val" style="color:var(--green)">−$1,100/mo</span></div>
+        <div class="nc-row"><span style="color:var(--green)">Total monthly benefit from selling</span><span class="nc-val" style="color:var(--green)">−$4,721/mo</span></div>
+        <div class="net-line">
+          <span class="net-lbl">Net effective cost of renting</span>
+          <span class="net-val" style="color:var(--green)">−$2,121/mo</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5">After the investment return on proceeds, renting a 2BR costs you <em>negative</em> $3,825/month — the investments are paying you more than rent costs. <strong>This is the power of liquidity.</strong></div>
+        <div class="div"></div>
+        <div class="nc-row"><span>Net sale proceeds at yr 8</span><span class="nc-val fw6">$599K</span></div>
+        <div class="nc-row"><span>Proceeds invested 6 yrs to retire</span><span class="nc-val fw6" style="color:var(--green)">$912K</span></div>
+        <div class="nc-row"><span>+ savings invested ($1,100/mo × 6yr)</span><span class="nc-val" style="color:var(--green)">+$98K</span></div>
+        <div class="nc-row"><span>Total home contribution at retirement</span><span class="nc-val fw6" style="color:var(--green)">$1.01M</span></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">That $1.01M generates $3,367/month in retirement income at the 4% rule — all from converting illiquid equity to liquid investments.</div>
+      </div>
+    </div>
+
+    <!-- RENT SLIDER + NET COST CHART -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><div class="ci" style="background:#eaf7f0">📊</div><div class="ct">Net Monthly Cost — Adjust Rent to Compare All Options</div></div>
+      <div class="cb">
+        <div class="rent-slider-wrap">
+          <div class="sl-lbl" style="margin-bottom:6px">What would you pay in rent? <span class="sl-v" id="lbl-rent">$2,600</span></div>
+          <input type="range" min="1500" max="4500" step="100" value="2600" id="sl-rent" oninput="updateRent()">
+          <div class="hint">Slide to any rent amount and see the net effective cost update in real time below.</div>
+        </div>
+
+        <div class="sl">Net effective monthly cost — what housing actually costs you</div>
+
+        <!-- Keep home -->
+        <div class="ncb-row">
+          <div class="ncb-lbl">Keep home (today)</div>
+          <div class="ncb-track">
+            <div class="ncb-bar" id="ncb-keep" style="background:var(--amber)">Today: $3,700 gross / net −$476</div>
+          </div>
+          <div class="ncb-val" id="ncbv-keep" style="color:var(--amber)">−$476</div>
+        </div>
+        <!-- Selected rent -->
+        <div class="ncb-row">
+          <div class="ncb-lbl">Sell → Rent at <span id="ncb-rent-lbl">$2,600</span></div>
+          <div class="ncb-track">
+            <div class="ncb-bar" id="ncb-rent" style="background:var(--green)">Net −$1,021/mo</div>
+          </div>
+          <div class="ncb-val" id="ncbv-rent" style="color:var(--green)">−$3,825</div>
+        </div>
+        <!-- Buy $400K cash -->
+        <div class="ncb-row">
+          <div class="ncb-lbl">Sell → Buy $400K cash</div>
+          <div class="ncb-track">
+            <div class="ncb-bar" style="width:12%;background:var(--gold)">$717/mo + $199K invested</div>
+          </div>
+          <div class="ncb-val" style="color:var(--gold)">$717 gross</div>
+        </div>
+        <!-- Buy $500K mortgage -->
+        <div class="ncb-row">
+          <div class="ncb-lbl">Sell → Buy $500K @ 6.8%</div>
+          <div class="ncb-track">
+            <div class="ncb-bar" style="width:100%;background:var(--red)">$4,409/mo — more than today!</div>
+          </div>
+          <div class="ncb-val" style="color:var(--red)">$4,409</div>
+        </div>
+
+        <div class="div"></div>
+        <div style="font-size:11px;line-height:1.6;color:var(--muted)">
+          <strong style="color:var(--text)">How to read this chart:</strong> "Net effective cost" subtracts the monthly investment return you earn on the $599K proceeds (7.25% ÷ 12 = $3,621/mo) from your rent. At $2,600 rent: $2,600 − $3,621 = −$1,021/mo. The investments cover most of your rent. Buying a new home at today's 6.8% rates is far more expensive than your current 3% mortgage — the only smart buy option is paying cash for a smaller place.
+        </div>
+
+        <div style="margin-top:12px" id="rent-verdict"></div>
+      </div>
+    </div>
+
+    <!-- RENT OPTIONS DETAIL -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><div class="ci" style="background:#e8f0fb">🏘</div><div class="ct">Rent Options — What Each Does to Your Retirement</div></div>
+      <div class="cb">
+        <div class="rent-grid">
+          <div class="rc" id="rc-2200" onclick="selectRC(2200,'Modest apartment')">
+            <div class="rc-name">Modest apartment</div>
+            <div class="rc-rent" style="color:var(--green)">$2,200</div>
+            <div class="rc-sub">/mo · saves $1,500 vs today</div>
+            <div class="rc-stat"><span>Net cost</span><span style="color:var(--green);font-weight:600">−$4,625/mo</span></div>
+            <div class="rc-stat"><span>At retirement</span><span style="font-weight:600">$1.63M</span></div>
+            <div class="rc-stat"><span>Income boost</span><span style="color:var(--green);font-weight:600">+$3,538/mo</span></div>
+          </div>
+          <div class="rc rsel" id="rc-2600" onclick="selectRC(2600,'Comfortable 2BR')">
+            <div class="rc-name">Comfortable 2BR ★</div>
+            <div class="rc-rent" style="color:var(--green)">$2,600</div>
+            <div class="rc-sub">/mo · saves $1,100 vs today</div>
+            <div class="rc-stat"><span>Net cost</span><span style="color:var(--green);font-weight:600">−$3,825/mo</span></div>
+            <div class="rc-stat"><span>At retirement</span><span style="font-weight:600">$1.01M</span></div>
+            <div class="rc-stat"><span>Income boost</span><span style="color:var(--green);font-weight:600">+$3,367/mo</span></div>
+          </div>
+          <div class="rc" id="rc-3000" onclick="selectRC(3000,'Townhome')">
+            <div class="rc-name">Townhome / larger</div>
+            <div class="rc-rent" style="color:var(--slate)">$3,000</div>
+            <div class="rc-sub">/mo · saves $700 vs today</div>
+            <div class="rc-stat"><span>Net cost</span><span style="color:var(--green);font-weight:600">−$3,025/mo</span></div>
+            <div class="rc-stat"><span>At retirement</span><span style="font-weight:600">$1.54M</span></div>
+            <div class="rc-stat"><span>Income boost</span><span style="color:var(--green);font-weight:600">+$3,247/mo</span></div>
+          </div>
+          <div class="rc rbad" id="rc-3400" onclick="selectRC(3400,'Comparable house')">
+            <div class="rc-name">Comparable house</div>
+            <div class="rc-rent" style="color:var(--amber)">$3,400</div>
+            <div class="rc-sub">/mo · saves only $300</div>
+            <div class="rc-stat"><span>Net cost</span><span style="color:var(--green);font-weight:600">−$2,225/mo</span></div>
+            <div class="rc-stat"><span>At retirement</span><span style="font-weight:600">$1.49M</span></div>
+            <div class="rc-stat"><span>Income boost</span><span style="color:var(--green);font-weight:600">+$3,130/mo</span></div>
+          </div>
+        </div>
+        <div class="note">Even the most expensive rent option ($3,400) still beats keeping the home in retirement income because the $599K in proceeds compounds for 6 years. Choose based on lifestyle, not the math.</div>
+      </div>
+    </div>
+
+    <!-- HOUSING TIMELINE -->
+    <div class="card">
+      <div class="ch"><div class="ci" style="background:#e8f0fb">🗓</div><div class="ct">Housing Timeline — What Actually Happens</div></div>
+      <div class="cb">
+        <div class="timeline">
+          <div class="tl-blk p1">
+            <div class="tl-tag" style="color:#1a6b3c">Phase 1 — Now to Year 8</div>
+            <div class="tl-val" style="color:#1a6b3c">Stay & build</div>
+            <div class="tl-desc">Eric age 55→63 · Karen 49→57. Keep current 3% mortgage. Home grows $900K → ~$1.30M. Equity $500K → ~$960K. Net wealth-building: ~$4,176/mo. Monthly cost stays $3,700.</div>
+          </div>
+          <div class="tl-blk p2">
+            <div class="tl-tag" style="color:#185FA5">Phase 2 — Year 8 to Retire</div>
+            <div class="tl-val" style="color:#185FA5">Sell & invest</div>
+            <div class="tl-desc">Eric 63→69 · Karen 57→63. Sell home, net $599K invested at 7.25%. Rent 2BR at $2,600/mo. Proceeds grow to ~$912K over 6 years. Both still working. Optimal financial period.</div>
+          </div>
+          <div class="tl-blk p3">
+            <div class="tl-tag">Phase 3 — Retirement</div>
+            <div class="tl-val">Decide & settle</div>
+            <div class="tl-desc">$1.58M from home generating income. Housing in retirement: $717/mo (buy $400K cash outright) to $3,000/mo (rent townhome). Full flexibility. No mortgage pressure. Reconsider VA's 5.75% state tax.</div>
+          </div>
+        </div>
+        <div class="flag fa">
+          <strong>Capital gains warning — document your cost basis NOW</strong>
+          At 4% appreciation, your home sells for ~$1.22M net of costs at year 8. If your cost basis is ~$450K, gain could exceed the $500K MFJ exclusion by ~$350K → $52K–$70K in capital gains tax. Every capital improvement (kitchen, roof, HVAC, addition) adds to basis. Start a folder today.
+        </div>
+        <div class="flag fn" style="margin-top:6px">
+          <strong>Do NOT pay off the mortgage early</strong>
+          Your 3% rate is below inflation and well below your 7–9% investment returns. Every dollar prepaid earns 3% in interest saved. Invested, it earns 4–6% more. Keep your normal payment and let the difference compound.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 3 — INCOME
+  ══════════════════════════════════════════ -->
+  <div id="tab-income" class="tp">
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#eaf7f0">💵</div><div class="ct">Current Household Income — Confirmed</div></div>
+        <div class="cb">
+          <div class="sl">Annual gross compensation</div>
+          <div class="wf" style="margin-bottom:12px">
+            <div class="wr"><div class="wl">Eric (salary $92K + HA $83K)</div><div class="wb"><div class="wbar" style="width:56%;background:#1b3a5c">$175,000</div></div><div class="wv">$188,000</div></div>
+            <div class="wr"><div class="wl">Karen (engineer salary)</div><div class="wb"><div class="wbar" style="width:44%;background:#546e8a">$138,000</div></div><div class="wv">$138,000</div></div>
+            <div class="wr"><div class="wl fw6">Combined gross</div><div class="wb"><div class="wbar" style="width:100%;background:#0f2744">$313,000</div></div><div class="wv fw6">$313,000</div></div>
+          </div>
+          <div class="sl">Where it goes annually</div>
+          <div class="wf">
+            <div class="wr"><div class="wl">Taxes (16.4% eff. rate)</div><div class="wb"><div class="wbar" style="width:16.4%;background:var(--amber)">16.4%</div></div><div class="wv" style="color:var(--amber)">$51,567</div></div>
+            <div class="wr"><div class="wl">Your 403(b) contributions</div><div class="wb"><div class="wbar" style="width:12.8%;background:var(--slate)">12.8%</div></div><div class="wv">$32,835</div></div>
+            <div class="wr"><div class="wl">Employer match (→ plan)</div><div class="wb"><div class="wbar" style="width:4.2%;background:var(--green)">4%</div></div><div class="wv" style="color:var(--green)">$13,260</div></div>
+            <div class="wr"><div class="wl fw6">Take-home (net)</div><div class="wb"><div class="wbar" style="width:76.8%;background:var(--green)">76.8%</div></div><div class="wv fw6" style="color:var(--green)">$240,643</div></div>
+          </div>
+          <div class="flag fg" style="margin-top:10px"><strong>Only 16.4% effective tax rate on $313K</strong>Eric's $82,638 housing allowance excluded from federal and VA tax = saving $22,932/year already. This is the tax efficiency working in real time.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#fff8e7">🏠</div><div class="ct">Monthly Cash Flow — Monarch Money Confirmed</div></div>
+        <div class="cb">
+          <div class="sl">2,612 transactions analyzed</div>
+          <div style="font-size:11px">
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span>Combined monthly take-home</span><span class="fw6">$20,054</span></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">Housing (disappears at retirement)</span><span style="color:var(--muted)">($3,700)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">403(b) contributions (stop at retirement)</span><span style="color:var(--muted)">($2,712)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0"><span class="fw6">True monthly lifestyle spend</span><span class="fw6" style="color:var(--green)">~$8,000–9,500</span></div>
+          </div>
+          <div class="flag fa" style="margin-top:10px"><strong>Monarch flag: "Christmas" = Amazon ($13,290)</strong>Monarch auto-labeled Amazon purchases as "Christmas." Fix: Transactions → filter Christmas → bulk recategorize. Your real spending is $8–9.5K/mo, not the inflated figure.</div>
+          <div class="div"></div>
+          <div class="sl">2025 monthly spending — top categories</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px">
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Mortgage</span><span class="fw6">$1,772</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--amber-l);border-radius:3px"><span style="color:var(--amber)">Amazon (mislabeled)</span><span class="fw6" style="color:var(--amber)">$1,182</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Groceries</span><span class="fw6">$528</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Medical</span><span class="fw6">$380</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Donations & Charity</span><span class="fw6">$500</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Entertainment</span><span class="fw6">$302</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Restaurants</span><span class="fw6">$276</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 6px;background:var(--slate-l);border-radius:3px"><span>Phone + Internet</span><span class="fw6">$288</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       TAB: SAVINGS & CONTRIBUTIONS
+  ══════════════════════════════════════════ -->
+  <div id="tab-savings" class="tp">
+
+    <!-- SUMMARY METRICS -->
+    <div class="savings-summary">
+      <div class="met mn"><div class="ml">Total to plans /mo</div><div class="mv" id="sv-total-mo">—</div><div class="ms">employee + employer combined</div><div class="mb"></div></div>
+      <div class="met mg"><div class="ml">Total to plans /yr</div><div class="mv" id="sv-total-yr">—</div><div class="ms">employee + employer combined</div><div class="mb"></div></div>
+      <div class="met mgo"><div class="ml">% of gross income</div><div class="mv" id="sv-pct">—</div><div class="ms">household savings rate</div><div class="mb"></div></div>
+      <div class="met ma"><div class="ml">Total liquid at retire</div><div class="mv" id="sv-at-retire">—</div><div class="ms">all assets at selected age</div><div class="mb"></div></div>
+    </div>
+
+    <!-- PER-PERSON CONTRIBUTION CONTROLS -->
+    <div class="contrib-grid">
+
+      <!-- ERIC -->
+      <div class="contrib-person eric">
+        <div class="cp-name" style="color:var(--navy)">
+          Eric (Chip)
+          <span class="bdg bn">403(b)(9) · Empower</span>
+        </div>
+        <div class="sl">Current salary breakdown</div>
+        <div class="cp-stat"><span>Salary</span><span class="fw6">$92,362</span></div>
+        <div class="cp-stat"><span>Housing allowance</span><span class="fw6">$82,638</span></div>
+        <div class="cp-stat"><span>Total compensation</span><span class="fw6">$175,000</span></div>
+        <div class="div"></div>
+        <div class="sl">403(b)(9) contribution rate</div>
+        <div class="cg">
+          <div class="sl-lbl">Employee contribution <span class="sl-v" id="lbl-epct">9%</span></div>
+          <input type="range" min="1" max="23" step="1" value="9" id="sl-epct" oninput="updateContribs()">
+          <div class="hint" id="eric-contrib-hint">$18,800/yr employee (6% trad + 4% Roth) · $11,280 employer match (6%) · ~$2,700 bonus contrib</div>
+        </div>
+        <div class="cp-stat"><span>Your contribution (monthly)</span><span class="fw6 text-navy" id="e-emp-mo">—</span></div>
+        <div class="cp-stat"><span>Your contribution (annual)</span><span class="fw6" id="e-emp-yr">—</span></div>
+        <div class="cp-stat"><span>Employer match (6% → <span id="e-match-pct">6%</span>)</span><span class="fw6" style="color:var(--green)" id="e-match-yr">$10,500/yr</span></div>
+        <div class="cp-stat"><span>Bonus contrib (9% emp + 6% er on ~$18K)</span><span class="fw6" style="color:var(--green)">~$2,705/yr</span></div>
+        <div class="cp-stat" style="padding-top:6px;border-top:1px solid rgba(0,0,0,.1);margin-top:4px">
+          <span class="fw6">Total going to plan /yr</span>
+          <span class="fw6" style="color:var(--navy)" id="e-total-yr">—</span>
+        </div>
+        <div class="cp-stat">
+          <span class="fw6">Monthly take-home impact</span>
+          <span class="fw6" style="color:var(--amber)" id="e-takehome-impact">—</span>
+        </div>
+        <div class="flag fn" style="margin-top:10px" id="e-contrib-flag">
+          <strong>Currently at 9% — maxing the match</strong>
+          Employer matches up to 6%. Contribution splits 6% traditional + 4% Roth. Bonus: 10% + 6% employer on $15K = $2,400/yr to plan. IRS limit 2026: $31,000 with catch-up (age 55+). Current: $18,800 — $12,200 of headroom.
+        </div>
+      </div>
+
+      <!-- KAREN -->
+      <div class="contrib-person karen">
+        <div class="cp-name" style="color:var(--slate)">
+          Karen
+          <span class="bdg bn">403(b)/IRA</span>
+        </div>
+        <div class="sl">Current salary</div>
+        <div class="cp-stat"><span>Annual salary</span><span class="fw6">$138,000</span></div>
+        <div class="cp-stat"><span>2% annual COLA assumed</span><span class="fw6" style="color:var(--green)">+$2,752/yr</span></div>
+        <div class="div"></div>
+        <div class="sl">403(b) contribution rate</div>
+        <div class="cg">
+          <div class="sl-lbl">Employee contribution <span class="sl-v" id="lbl-kpct">12%</span></div>
+          <input type="range" min="1" max="23" step="1" value="12" id="sl-kpct" oninput="updateContribs()">
+          <div class="hint" id="karen-contrib-hint">$16,551/yr employee (6% pre-tax + 6% Roth) · $8,267 UVA employer (401a + Plan 2)</div>
+        </div>
+        <div class="cp-stat"><span>Your contribution (monthly)</span><span class="fw6 text-navy" id="k-emp-mo">—</span></div>
+        <div class="cp-stat"><span>Your contribution (annual)</span><span class="fw6" id="k-emp-yr">—</span></div>
+        <div class="cp-stat"><span>UVA employer (401a + Plan 2 = 6%)</span><span class="fw6" style="color:var(--green)" id="k-match-yr">$8,267/yr</span></div>
+        <div class="cp-stat" style="padding-top:6px;border-top:1px solid rgba(0,0,0,.1);margin-top:4px">
+          <span class="fw6">Total going to plan /yr</span>
+          <span class="fw6" style="color:var(--slate)" id="k-total-yr">—</span>
+        </div>
+        <div class="cp-stat">
+          <span class="fw6">Monthly take-home impact</span>
+          <span class="fw6" style="color:var(--amber)" id="k-takehome-impact">—</span>
+        </div>
+        <div class="flag fn" style="margin-top:10px" id="k-contrib-flag">
+          <strong>Currently at 12% — strong contribution rate</strong>
+          6% pre-tax TIAA + 6% Roth TIAA confirmed from paystub. UVA adds another 6% (401a + Plan 2). Total to plan: $24,817/yr. Catch-up eligible from 2027 (age 50 → up to $31,000/yr).
+        </div>
+      </div>
+    </div>
+
+    <!-- ADDITIONAL INVESTMENTS -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><div class="ci" style="background:#eaf7f0">➕</div><div class="ct">Additional Monthly Investments (Brokerage / Roth IRA / Savings)</div></div>
+      <div class="cb">
+        <div class="flag fa" style="margin-bottom:12px">
+          <strong>You currently have no savings outside your 403(b)s</strong>
+          A taxable brokerage account gives you penalty-free access before age 59½ and serves as the bridge fund for years 8–10 (home sale → inheritance gap). Add any planned or aspirational monthly investments below to see their impact on retirement wealth.
+        </div>
+        <div class="add-invest-row">
+          <div style="flex:1;min-width:120px">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Monthly amount</div>
+            <input type="number" id="ai-amt" placeholder="$500" min="0" step="50">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Account type</div>
+            <select id="ai-type">
+              <option>Taxable brokerage</option>
+              <option>Roth IRA</option>
+              <option>HSA</option>
+              <option>Savings account</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Annual return</div>
+            <select id="ai-ret">
+              <option value="7.25">7.25% (moderate)</option>
+              <option value="9.31">9.31% (Empower)</option>
+              <option value="5.0">5.0% (conservative)</option>
+              <option value="4.0">4.0% (high-yield savings)</option>
+            </select>
+          </div>
+          <button class="ai-btn" onclick="addInvestment()">+ Add</button>
+        </div>
+        <div id="ai-list" style="margin-bottom:10px"></div>
+        <div id="ai-impact" style="font-size:11px;display:none">
+          <div class="div"></div>
+          <div class="sl">Impact of additional investments at retirement</div>
+          <div class="wf" id="ai-wf"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALARY + CONTRIBUTION GROWTH TABLE -->
+    <div class="card">
+      <div class="ch"><div class="ci" style="background:#e8f0fb">📅</div><div class="ct">Year-by-Year Contribution Projections</div></div>
+      <div class="cb">
+        <div class="proj-toggle">
+          <button class="pt pton" onclick="setProj('5')" id="proj-5">5 Years</button>
+          <button class="pt" onclick="setProj('10')" id="proj-10">10 Years</button>
+          <button class="pt" onclick="setProj('retire')" id="proj-retire">To Retirement</button>
+        </div>
+        <div class="cg">
+          <div class="sl-lbl">Annual salary raise — Eric <span class="sl-v" id="lbl-eraise">3%</span></div>
+          <input type="range" min="0" max="8" step="0.5" value="3" id="sl-eraise" oninput="updateContribs()">
+        </div>
+        <div class="cg">
+          <div class="sl-lbl">Annual salary raise — Karen (current COLA) <span class="sl-v" id="lbl-kraise">2%</span></div>
+          <input type="range" min="0" max="8" step="0.5" value="2" id="sl-kraise" oninput="updateContribs()">
+        </div>
+        <div class="proj-table-wrap">
+          <table class="tbl" id="proj-table">
+            <thead><tr>
+              <th>Year</th><th>Eric Age</th><th>Eric Salary</th><th>Eric Contrib/yr</th><th>Eric Total/yr</th>
+              <th>Karen Salary</th><th>Karen Contrib/yr</th><th>Karen Total/yr</th>
+              <th>HH Total /mo</th><th>HH Total /yr</th>
+            </tr></thead>
+            <tbody id="proj-tbody"></tbody>
+          </table>
+        </div>
+        <div class="note">Eric "Total/yr" = employee (9%) + employer match (6%) + bonus contribution (~$2,705/yr on ~$18K gross bonus). Karen 'Total/yr' = employee (slider %) + UVA employer 6% (401a $106.21 + Plan 2 $211.73 per period × 26). Eric 'Total/yr' = employee + 6% match + bonus contrib. All confirmed from paystubs May 2026.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 4 — ASSETS
+  ══════════════════════════════════════════ -->
+  <div id="tab-assets" class="tp">
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#e8f0fb">📈</div><div class="ct">403(b) Growth — Adjust Returns in Planner Tab</div></div>
+        <div class="cb" style="padding:0;overflow-x:auto">
+          <table class="tbl"><thead><tr><th>Year</th><th>Eric Age</th><th>Eric 403(b)</th><th>Karen 403(b)</th><th>Combined</th></tr></thead><tbody id="asset-tbody"></tbody></table>
+          <div class="note" style="padding:8px 12px">Eric: $161K · $30,080/yr (6% trad + 4% Roth + 6% employer on $188K) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#fef9ec">🏦</div><div class="ct">Complete Wealth at Selected Retirement Age</div></div>
+        <div class="cb">
+          <div class="sl">All assets — updates with planner controls</div>
+          <div class="wf" id="wealth-wf"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       TAB: TAXES AT RETIREMENT
+  ══════════════════════════════════════════ -->
+  <div id="tab-tax" class="tp">
+
+    <!-- TOGGLES -->
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#fdf0ef">🧾</div><div class="ct">Tax Assumptions</div></div>
+        <div class="cb">
+          <div class="sl">State of residence in retirement</div>
+          <div class="cg">
+            <div class="sl-lbl">State income tax <span class="sl-v" id="lbl-statetax">Virginia</span></div>
+            <div class="tr">
+              <button class="tog ton" onclick="setStateTax(false)" id="st-va">Virginia (5.75%)</button>
+              <button class="tog" onclick="setStateTax(true)" id="st-none">FL / TN / TX (0%)</button>
+            </div>
+            <div class="hint" id="tx-va-note" style="margin-top:8px">Virginia taxes retirement income at 5.75%. Moving saves significantly.</div>
+          </div>
+          <div class="cg">
+            <div class="sl-lbl">Roth distributions at retirement (Eric + Karen) <span class="sl-v" id="lbl-roth">$950</span></div>
+            <input type="range" min="0" max="3000" step="100" value="950" id="sl-roth" oninput="setRoth()">
+            <div class="hint">Karen's Roth TIAA balance generates tax-free income in retirement. Adjust based on how much her Roth portion grows.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#eaf7f0">💡</div><div class="ct">Tax Summary at Selected Retirement Age</div></div>
+        <div class="cb" id="tax-panel">
+          <div class="sl">Income & taxation</div>
+          <div style="font-size:11px">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Gross retirement income</span><span class="fw6" id="tx-gross">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:#27ae60">Less: Housing allowance <span class="bdg bg">tax-free</span></span><span style="color:#27ae60" id="tx-ha">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:#27ae60">Less: Roth distributions <span class="bdg bg">tax-free</span></span><span style="color:#27ae60" id="tx-roth">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Social Security taxable portion</span><span id="tx-ss-pct" class="fw6">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:#c0392b">SS amount taxable</span><span style="color:#c0392b" id="tx-taxable-ss">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:2px solid var(--border)"><span class="fw6">Adjusted Gross Income (AGI)</span><span class="fw6" id="tx-agi">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:#c0392b">Federal income tax</span><span style="color:#c0392b;font-weight:600" id="tx-federal">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:#c0392b">State income tax</span><span style="color:#c0392b;font-weight:600" id="tx-state">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:2px solid var(--border)"><span class="fw6">Total taxes</span><span style="font-size:14px;font-weight:700;color:#c0392b" id="tx-total">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span class="fw6" style="color:#1b3a5c">Net monthly income</span><span style="font-size:16px;font-weight:700;color:#27ae60" id="tx-net">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span>Effective tax rate</span><span class="fw6" id="tx-eff">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span class="fw6">Net surplus above $9,545 lifestyle</span><span class="fw6" style="color:#27ae60" id="tx-netsur">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAX BY STREAM -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><div class="ci" style="background:#fdf0ef">📊</div><div class="ct">How Each Income Stream is Taxed</div></div>
+      <div class="cb">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+          <div style="background:#edf2f7;border-radius:8px;padding:12px;border-top:3px solid #1b3a5c">
+            <div style="font-size:10px;font-weight:700;color:#1b3a5c;margin-bottom:6px">PORTFOLIO WITHDRAWALS</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.6">Pre-tax 403(b) distributions are <strong>ordinary income</strong> — taxed at your marginal rate. Eric's Guidestone/Empower is 100% pre-tax. Karen's Roth TIAA portion is tax-free.</div>
+            <div class="bdg bn" style="margin-top:8px;display:inline-block">Mostly taxable</div>
+          </div>
+          <div style="background:#eaf7f0;border-radius:8px;padding:12px;border-top:3px solid #27ae60">
+            <div style="font-size:10px;font-weight:700;color:#1a6b3c;margin-bottom:6px">HOUSING ALLOWANCE</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.6">The 403(b)(9) crown jewel. Distributions designated as housing allowance are <strong>excluded from federal AND Virginia income tax</strong>. Requires board designation + documented actual housing expenses.</div>
+            <div class="bdg bg" style="margin-top:8px;display:inline-block">100% tax-free ✓</div>
+          </div>
+          <div style="background:#fdf0ef;border-radius:8px;padding:12px;border-top:3px solid #c0392b">
+            <div style="font-size:10px;font-weight:700;color:#8b1a10;margin-bottom:6px">SOCIAL SECURITY</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.6">At your income level, <strong>85% of SS is taxable</strong> (the maximum). Your provisional income (~$221K) is well above the $44K MFJ threshold. This cannot be avoided at your portfolio size.</div>
+            <div class="bdg br" style="margin-top:8px;display:inline-block">85% taxable</div>
+          </div>
+          <div style="background:#eaf7f0;border-radius:8px;padding:12px;border-top:3px solid #27ae60">
+            <div style="font-size:10px;font-weight:700;color:#1a6b3c;margin-bottom:6px">KAREN'S ROTH TIAA</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.6">Karen is splitting contributions 50/50 pre-tax/Roth. Her Roth balance grows tax-free and distributions are <strong>completely tax-free</strong> in retirement. Smart structure — Eric has no Roth.</div>
+            <div class="bdg bg" style="margin-top:8px;display:inline-block">100% tax-free ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREE STRATEGIES -->
+    <div class="card">
+      <div class="ch"><div class="ci" style="background:#e8f0fb">🎯</div><div class="ct">Three Tax Strategies Worth Discussing with Your CPA</div></div>
+      <div class="cb">
+        <div class="g3">
+          <div class="flag fn" style="margin:0">
+            <strong>1. State of residence — $12K/yr decision</strong>
+            Virginia taxes your retirement income at 5.75%. Florida, Tennessee, and Texas have zero state income tax. At your income level, moving saves ~$12,292/year — $245,848 over 20 years. If the kids land somewhere warm, this deserves a deliberate conversation before retirement.
+          </div>
+          <div class="flag fn" style="margin:0">
+            <strong>2. Eric should consider Roth contributions</strong>
+            Eric's entire 403(b) is pre-tax — every dollar he withdraws is taxable income. Karen is smart to split 50/50. Ask Guidestone/Empower if a Roth 403(b) option is available. Converting even $500/mo to Roth now reduces future taxable income. Your current effective rate (16.4%) ≈ retirement rate (16.3%) — so now is a neutral time to convert.
+          </div>
+          <div class="flag fn" style="margin:0">
+            <strong>3. Housing allowance sizing matters</strong>
+            The larger your documented housing expenses in retirement, the more you can designate as housing allowance and exclude from tax. If you buy a smaller home outright (the $400K cash option), your allowable housing expenses drop. If you rent, your rent qualifies. Plan your retirement housing around maximizing this exclusion — it's worth $1,000+/month in tax savings.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 5 — SOCIAL SECURITY
+  ══════════════════════════════════════════ -->
+  <div id="tab-ss" class="tp">
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#fef9ec">🏛</div><div class="ct">Eric — Confirmed SSA (05/26/2026)</div></div>
+        <div class="cb">
+          <div class="ssr"><div class="ssa">62</div><div class="ssb"><div class="ssbf" style="width:46%;background:var(--red)"></div></div><div class="ssv" style="color:var(--red)">$1,838</div><span class="bdg br">−$25K/yr vs 70</span></div>
+          <div class="ssr"><div class="ssa">67</div><div class="ssb"><div class="ssbf" style="width:75%;background:var(--slate)"></div></div><div class="ssv">$2,999</div><span class="bdg bn">FRA</span></div>
+          <div class="ssr"><div class="ssa">68</div><div class="ssb"><div class="ssbf" style="width:81%;background:var(--slate)"></div></div><div class="ssv">$3,239</div></div>
+          <div class="ssr"><div class="ssa">69</div><div class="ssb"><div class="ssbf" style="width:87%;background:var(--navy-l)"></div></div><div class="ssv">$3,479</div></div>
+          <div class="ssr"><div class="ssa">70</div><div class="ssb"><div class="ssbf" style="width:100%;background:var(--green)"></div></div><div class="ssv" style="color:var(--green);font-weight:700">$3,989</div><span class="bdg bg">Max ★</span></div>
+          <div class="flag fg" style="margin-top:10px"><strong>Wait from 69→70: +$6,120/year forever · Breakeven age 77</strong>You'll retire at 69. One more year buys $510/mo for life. Likely the right call.</div>
+          <div class="flag fn" style="margin-top:6px"><strong>Survivor benefit: Karen gets Eric's SS if he dies</strong>At $3,989/mo, Karen's survivor = $3,989/mo for life. Claiming early permanently reduces this.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#eaf7f0">🏛</div><div class="ct">Karen — Confirmed SSA (05/26/2026)</div></div>
+        <div class="cb">
+          <div class="ssr"><div class="ssa">62</div><div class="ssb"><div class="ssbf" style="width:52%;background:var(--red)"></div></div><div class="ssv" style="color:var(--red)">$2,362</div><span class="bdg br">−$14K/yr vs 67</span></div>
+          <div class="ssr"><div class="ssa">63</div><div class="ssb"><div class="ssbf" style="width:56%;background:var(--red)"></div></div><div class="ssv" style="color:var(--red)">$2,549</div><span class="bdg br">−$12K/yr vs 67</span></div>
+          <div class="ssr"><div class="ssa">65</div><div class="ssb"><div class="ssbf" style="width:67%;background:var(--amber)"></div></div><div class="ssv" style="color:var(--amber)">$3,021</div></div>
+          <div class="ssr"><div class="ssa">67</div><div class="ssb"><div class="ssbf" style="width:79%;background:var(--green)"></div></div><div class="ssv" style="color:var(--green);font-weight:700">$3,567</div><span class="bdg bg">FRA ★</span></div>
+          <div class="ssr"><div class="ssa">68</div><div class="ssb"><div class="ssbf" style="width:85%;background:var(--navy-l)"></div></div><div class="ssv">$3,838</div></div>
+          <div class="ssr"><div class="ssa">69</div><div class="ssb"><div class="ssbf" style="width:92%;background:var(--navy-l)"></div></div><div class="ssv">$4,155</div></div>
+          <div class="ssr"><div class="ssa">70</div><div class="ssb"><div class="ssbf" style="width:100%;background:var(--navy)"></div></div><div class="ssv fw6">$4,521</div></div>
+          <div class="flag fr" style="margin-top:10px"><strong>Claiming at 63 costs $12,216/year FOREVER · Breakeven age 77</strong>Portfolio + HA + Eric's SS covers everything. Don't need the income at 63. Wait to 67.</div>
+          <div class="flag fa" style="margin-top:6px"><strong>Earnings gap 2011–2016 (6 zero years) already reflected</strong>Every year at $138K+ replaces a zero. By 63 most zeros replaced — benefit may be higher.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="ch"><div class="ci" style="background:#e8f0fb">🔢</div><div class="ct">Combined SS — All Four Claiming Scenarios</div></div>
+      <div class="cb" style="padding:0;overflow-x:auto">
+        <table class="tbl"><thead><tr><th>Scenario</th><th>Eric SS</th><th>Karen SS</th><th>Combined SS</th><th>vs Scenario B</th><th>Over 20 yrs</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>A — Eric 67, Karen 67</td><td>$2,999</td><td>$3,567</td><td>$6,566</td><td>−$990/mo</td><td>−$237,600</td><td><span class="bdg bn">Suboptimal</span></td></tr>
+          <tr class="hl"><td>B — Eric 70, Karen 67 ★ RECOMMENDED</td><td>$3,989</td><td>$3,567</td><td>$7,556</td><td>baseline</td><td>baseline</td><td><span class="bdg bg">Best overall</span></td></tr>
+          <tr><td>C — Eric 70, Karen 70</td><td>$3,989</td><td>$4,521</td><td>$8,510</td><td>+$954/mo</td><td>+$228,960</td><td><span class="bdg bn">If Karen very healthy</span></td></tr>
+          <tr><td>D — Eric 70, Karen 63 ⚠</td><td>$3,989</td><td>$2,549</td><td>$6,538</td><td>−$1,018/mo</td><td>−$244,320</td><td><span class="bdg br">Costly mistake</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 6 — ACTIONS
+  ══════════════════════════════════════════ -->
+  <div id="tab-actions" class="tp">
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#eaf7f0">✅</div><div class="ct">Five Action Items — Do These Now</div></div>
+        <div class="cb">
+          <div class="flag fr"><strong>1. Document 2026 housing expenses NOW</strong>Housing allowance ($82,638) may exceed documented costs. Mortgage interest ($14,709) + RE taxes ($7,872) = only $22,581 confirmed from Schedule A. Every utility, insurance premium, repair receipt protects the full tax exclusion. Board must designate before year-end. CPA review urgent.</div>
+          <div class="flag fa"><strong>2. Get corrected Empower fee illustration</strong>Comparison used Nuveen TDFs at 0.10%. Actual lineup: GG Trust American Funds TDFs at 0.26–0.42%. The $3,880/yr savings claim overstates by ~$1,256/yr. Get revised illustration in writing before signing.</div>
+          <div class="flag fa"><strong>3. Recategorize Amazon in Monarch</strong>$13,290 of "Christmas" spending is Amazon. Fix in Monarch → Transactions → filter Christmas → bulk recategorize. Your true lifestyle cost is ~$8,000–9,500/mo, not the inflated figure shown.</div>
+          <div class="flag fa"><strong>4. Open a taxable brokerage account</strong>No savings outside 403(b)s = no penalty-free pre-59½ access. Even $500–1,000/month now builds $88–175K by age 65. Essential bridge for years 8–10 (home sale → inheritance gap).</div>
+          <div class="flag fa"><strong>5. Karen is contributing 12% — maintain and consider catch-up</strong>Confirmed 6% pre-tax + 6% Roth from UVA paystub ($16,551/yr employee). UVA adds another 6% ($8,267/yr). Total $24,817/yr. Catch-up eligible from 2027 (age 50 → up to $31,000/yr).</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#fef9ec">💡</div><div class="ct">The Bottom Line</div></div>
+        <div class="cb">
+          <div class="flag fg"><strong>You can retire at 65 — confirmed by actual numbers</strong>At age 65 with just portfolio + HA income = $13,882/mo against a true lifestyle cost of ~$9,000/mo. Surplus before SS even starts. You are living well below your means and didn't know it.</div>
+          <div class="flag fn" style="margin-top:6px"><strong>The sweet spot is age 69 — both retire together</strong>Karen is 63, you are 69. Portfolio $4.54M. Income $26,205/mo — nearly 3× your lifestyle cost. Eric waits one more year for maximum SS at 70.</div>
+          <div class="div"></div>
+          <div class="sl">Questions to answer together</div>
+          <div style="font-size:11px;line-height:1.7">
+            <div style="padding:5px 0;border-bottom:1px solid var(--border)"><span class="bdg bn" style="margin-right:5px">1</span>Where geographically in retirement? VA's 5.75% tax costs $13K+/yr on your income. FL/TN/TX = $0.</div>
+            <div style="padding:5px 0;border-bottom:1px solid var(--border)"><span class="bdg bn" style="margin-right:5px">2</span>Where will Molly, Morgan, Cooper land? Proximity to grandchildren often matters more than optimization.</div>
+            <div style="padding:5px 0;border-bottom:1px solid var(--border)"><span class="bdg bn" style="margin-right:5px">3</span>What does Eric do at 65–69? Ministry consulting/speaking at $2–3K/mo = equivalent of $600–900K in portfolio value.</div>
+            <div style="padding:5px 0"><span class="bdg bn" style="margin-right:5px">4</span>What does "same lifestyle" mean with $12K+/month in surplus? Travel, giving, legacy?</div>
+          </div>
+          <div class="div"></div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5"><strong style="color:var(--text)">Disclaimer:</strong> Illustrative only. Not financial, legal, or tax advice. Returns not guaranteed. SS from confirmed SSA statements 05/26/2026, subject to legislative change. Consult a licensed financial advisor and CPA before making decisions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── CONFIRMED DATA ──
+const ERIC_SS  = {62:1838,63:1958,64:2079,65:2199,66:2599,67:2999,68:3239,69:3479,70:3989};
+const KAREN_SS = {62:2362,63:2549,64:2753,65:3021,66:3292,67:3567,68:3838,69:4155,70:4521};
+const NET_PROCEEDS = 599323; // capped at $1M sale price
+const INV_RETURN_MONTHLY = 599323 * 0.0725 / 12; // $3,621/mo (capped at $1M sale)
+const LIFESTYLE = 9545; // confirmed from paystub analysis
+
+let S = {
+  ericAge:69, ericSSAge:70, karenSSAge:67,
+  ericRet:9.31, karenRet:7.25, ha:3500, inh:true, sell:true,
+  rentAmt:2600
+};
+
+const fmt  = n => '$' + Math.round(n).toLocaleString();
+const fmtM = n => n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + (n/1000).toFixed(0) + 'K';
+
+// ── ASSET CALCULATOR ──
+function calcAssets(age) {
+  const yr = age - 55;
+  const re = (S.ericRet  || 9.31) / 100 / 12;
+  const rk = (S.karenRet || 7.25) / 100 / 12;
+  let eb = 161000, kb = 245481;
+  for (let y = 1; y <= yr; y++) {
+    const retireYr = age - 55; // year they retire (= yr when calling calcAssets(age))
+    const stillWorking = y < retireYr; // contributions stop IN the retirement year
+
+    // Eric 403(b): only while working
+    const eSal = 188000 * Math.pow(1 + (S.ericRaise||3)/100, y);
+    const eEmp = stillWorking ? Math.min(eSal * (S.ericPct||9)/100, 23500 + ((55+y)>=50?7500:0)) : 0;
+    const eMatch = stillWorking ? eSal * 0.06 : 0;
+    const bonusGross = 18033;
+    const eBonus = stillWorking ? bonusGross * ((S.ericPct||9)/100 + 0.06) : 0;
+    const eTotalAnnual = eEmp + eMatch + eBonus;
+    for (let m = 0; m < 12; m++) eb = eb*(1+re) + eTotalAnnual/12;
+
+    // Karen 403(b): stops when Karen retires (may be different year than Eric)
+    const karenRetireYr = (S.karenRetireAge || (49+(age-55))) - 49; // years from Karen age 49
+    const karenStillWorking = y < karenRetireYr;
+    const kSal = 138000 * Math.pow(1 + (S.karenRaise||2)/100, y);
+    const kPct = (S.karenPct||12)/100;
+    const kEmp = karenStillWorking ? Math.min(kSal * kPct, 23500 + ((49+y)>=50?7500:0)) : 0;
+    const kMatch = karenStillWorking ? kSal * 0.06 : 0;
+    const kTotalAnnual = kEmp + kMatch;
+    for (let m = 0; m < 12; m++) kb = kb*(1+rk) + kTotalAnnual/12;
+  }
+  // Additional investments — stop contributions at retirement, keep compounding
+  let addl = 0;
+  if (S.addlInvests && S.addlInvests.length > 0) {
+    S.addlInvests.forEach(inv => {
+      const rm = inv.ret/100/12;
+      const workYrs = Math.max(0, yr - 1); // contribute during working years only
+      // FV of contributions during working years
+      const fvContrib = workYrs > 0 ? inv.amt * ((Math.pow(1+rm, workYrs*12)-1)/rm) : 0;
+      // Then compound that amount for remaining year(s)
+      addl += fvContrib * Math.pow(1+rm, 12);
+    });
+  }
+  let home = 0;
+  if (S.sell && yr >= 8) {
+    const yi = yr - 8, rm = S.karenRet/100/12, n = yi*12;
+    home = NET_PROCEEDS * Math.pow(1+rm, n);
+    if (yi > 0) home += 900 * (Math.pow(1+rm,n)-1)/rm;
+  }
+  let inh = 0;
+  const inhAmt = S.inhAmt || 500000;
+  const inhYr  = S.inhYr  || 10;
+  if (S.inh) {
+    if (yr >= inhYr) {
+      const yi = yr - inhYr, rm = S.karenRet/100/12, n = yi*12;
+      inh = inhAmt * Math.pow(1+rm, n);
+    } else { inh = inhAmt; }
+  }
+  // Inheritance 2 — Karen's father (large estate)
+  let inh2 = 0;
+  const inh2Amt = S.inh2Amt || 6250000;
+  const inh2Yr  = S.inh2Yr  || 5;
+  if (S.inh2 && yr >= inh2Yr) {
+    const yi2 = yr - inh2Yr, rm2 = (S.karenRet||7.25)/100/12, n2 = yi2*12;
+    inh2 = inh2Amt * Math.pow(1+rm2, n2);
+  } // if not yet received, inh2 stays 0
+    return { eric:eb, karen:kb, home, inh, inh2, addl, total:eb+kb+home+inh+inh2+addl };
+}
+
+// ── SYNC RETIRE (Karen locked to Eric) ──
+function syncKarenRetire() {
+  S.karenRetireAge = +document.getElementById('sl-kra').value;
+  S.karenRetireManual = true;
+  const ericDefaultKaren = 49 + (S.ericAge - 55);
+  const diff = S.karenRetireAge - ericDefaultKaren;
+  document.getElementById('lbl-kra').textContent = 'age ' + S.karenRetireAge;
+  document.getElementById('karen-retire-hint').textContent =
+    diff === 0 ? 'Same year as Eric' :
+    diff < 0 ? 'Karen retires ' + Math.abs(diff) + ' yr' + (Math.abs(diff)>1?'s':'') + ' before Eric' :
+               'Karen retires ' + diff + ' yr' + (diff>1?'s':'') + ' after Eric';
+  renderAll();
+}
+
+function resetKarenRetire() {
+  S.karenRetireManual = false;
+  const karenDefault = 49 + (S.ericAge - 55);
+  S.karenRetireAge = karenDefault;
+  document.getElementById('sl-kra').value = karenDefault;
+  document.getElementById('lbl-kra').textContent = 'age ' + karenDefault;
+  document.getElementById('karen-retire-hint').textContent = 'Same year as Eric';
+  renderAll();
+}
+
+function syncRetire() {
+  S.ericAge = +document.getElementById('sl-era').value;
+  const karenAge = S.karenRetireAge || (49 + (S.ericAge - 55));
+  const karenRetireSameYear = !S.karenRetireManual || karenAge === (49 + (S.ericAge - 55));
+  document.getElementById('lbl-era').textContent = S.ericAge;
+  document.getElementById('retire-hint').textContent =
+    `Karen retires same year at age ${karenAge} · Year ${S.ericAge-55} from now (${2026+(S.ericAge-55)})`;
+  update();
+}
+
+// ── MAIN UPDATE ──
+function update() {
+  S.ericRet = +document.getElementById('sl-eret').value;
+  S.karenRet = +document.getElementById('sl-kret').value;
+  S.ha       = +document.getElementById('sl-ha').value;
+  document.getElementById('lbl-eret').textContent = S.ericRet.toFixed(2) + '%';
+  document.getElementById('lbl-kret').textContent = S.karenRet.toFixed(2) + '%';
+  document.getElementById('lbl-ha').textContent   = fmt(S.ha);
+  renderAll();
+}
+
+
+// ── TAX CALCULATOR ──
+// Returns { federal, state, total, netMonthly, effectiveRate }
+// All inputs/outputs monthly; internally works annually
+function calcTax(port, ha, ericSS, karenSS, rothMonthly) {
+  // Guard against NaN/undefined
+  port = +port || 0; ha = +ha || 0; ericSS = +ericSS || 0;
+  karenSS = +karenSS || 0; rothMonthly = +rothMonthly || 0;
+  const portAnnual   = port * 12;
+  const haAnnual     = ha   * 12;   // tax-free
+  const ssAnnual     = (ericSS + karenSS) * 12;
+  const rothAnnual   = (rothMonthly || 0) * 12; // tax-free Roth distributions
+  const grossAnnual  = portAnnual + haAnnual + ssAnnual + rothAnnual;
+
+  // Taxable portfolio = pre-tax 403(b) withdrawals only
+  const taxablePort = portAnnual - rothAnnual;
+
+  // SS provisional income → 85% taxable above $44K threshold (MFJ)
+  const provisional = taxablePort + ssAnnual * 0.50;
+  const ssTaxPct    = provisional > 44000 ? 0.85 : provisional > 32000 ? 0.50 : 0;
+  const taxableSS   = ssAnnual * ssTaxPct;
+
+  // AGI
+  const agi = taxablePort + taxableSS;
+
+  // ── FEDERAL TAX (2026 MFJ brackets) ──
+  // Standard deduction: $29,200 (2024) inflated ~2%/yr × 14 = ~$38,000 at retirement
+  // Use $32,000 conservative estimate; also add $1,550/person 65+ = $3,100
+  const stdDed = 32000 + 3100; // MFJ + both over 65
+  const fedTaxable = Math.max(0, agi - stdDed);
+  const fedBrackets = [[23200,0.10],[71100,0.12],[106750,0.22],[182850,0.24],[103550,0.32],[243750,0.35],[Infinity,0.37]];
+  let federal = 0, rem = fedTaxable;
+  for (const [size, rate] of fedBrackets) {
+    const amt = Math.min(rem, size); federal += amt * rate; rem -= amt;
+    if (rem <= 0) break;
+  }
+
+  // ── VIRGINIA STATE TAX ──
+  // Age 65+ deduction: $12,000/person = $24,000 couple
+  // VA std deduction: $9,000 MFJ, personal exemptions $800/person = $1,600
+  const vaDeductions = 24000 + 9000 + 1600;
+  const vaTaxable = Math.max(0, agi - vaDeductions);
+  const vaBrackets = [[3000,0.02],[2000,0.03],[12000,0.05],[Infinity,0.0575]];
+  let state = 0, remVA = vaTaxable;
+  for (const [size, rate] of vaBrackets) {
+    const amt = Math.min(remVA, size); state += amt * rate; remVA -= amt;
+    if (remVA <= 0) break;
+  }
+
+  // If no-income-tax state selected
+  if (S.noStateTax === true) state = 0;
+
+  const total         = federal + state;
+  const grossMonthly  = (portAnnual + haAnnual + ssAnnual + rothAnnual) / 12;
+  const netMonthly    = grossMonthly - total / 12;
+  const effectiveRate = grossMonthly > 0 ? (total / 12) / grossMonthly : 0;
+
+  return {
+    federal:      federal / 12,
+    state:        state   / 12,
+    total:        total   / 12,
+    netMonthly,
+    grossMonthly,
+    effectiveRate,
+    agi:          agi / 12,
+    taxableSS:    taxableSS / 12,
+    ssTaxPct:     Math.round(ssTaxPct * 100),
+    fedTaxable:   fedTaxable / 12,
+    vaDeductions: vaDeductions / 12,
+  };
+}
+
+
+// ── SS TIMING HELPER ──
+function calcSSIncome(ericRetireAge, ericSSAge, karenSSAge, port, ha) {
+  // SS minimum age is 62 — clamp claim ages
+  const ericSSAgeClamped  = Math.max(62, ericSSAge  || 70);
+  const karenSSAgeClamped = Math.max(62, karenSSAge || 67);
+  const eSS_full = (ERIC_SS[ericSSAgeClamped]  || ERIC_SS[70]  || 3989);
+  const kSS_full = (KAREN_SS[karenSSAgeClamped] || KAREN_SS[67] || 3567);
+  const karenRetireAge = 49 + (ericRetireAge - 55);
+
+  // SS only flows once retirement age >= claim age (and claim age >= 62)
+  const eSS_yr1 = ericRetireAge >= ericSSAgeClamped ? eSS_full : 0;
+  const kSS_yr1 = karenRetireAge >= karenSSAgeClamped ? kSS_full : 0;
+
+  const total_yr1    = port + ha + eSS_yr1 + kSS_yr1;
+  const total_steady = port + ha + eSS_full + kSS_full;
+
+  // How many years until full SS
+  const yrsToEricSS  = Math.max(0, ericSSAge - ericRetireAge);
+  const yrsToKarenSS = Math.max(0, karenSSAge - karenRetireAge);
+  const yrsToFull    = Math.max(yrsToEricSS, yrsToKarenSS);
+
+  const karenAgeAtFull = ericRetireAge - 55 + 49 + yrsToKarenSS; // Karen's age when her SS starts
+  const ericAgeAtFull  = ericRetireAge + yrsToFull;              // Eric's age when all SS flows
+
+  return {
+    year1:  { eSS: eSS_yr1,  kSS: kSS_yr1,  total: total_yr1  },
+    steady: { eSS: eSS_full, kSS: kSS_full, total: total_steady },
+    yrsToEricSS, yrsToKarenSS, yrsToFull,
+    ssGap: total_steady - total_yr1,
+    ericAgeAtFull, karenAgeAtFull
+  };
+}
+
+function renderAll() {
+  const assets = calcAssets(S.ericAge);
+  const port   = assets.total * 0.04 / 12;
+  S.ha = S.ha || 3500;  // guard against undefined
+  const karenAge = S.karenRetireAge || (49 + (S.ericAge - 55));
+  const karenRetireSameYear = !S.karenRetireManual || karenAge === (49 + (S.ericAge - 55));
+
+  // SS timing — year 1 vs steady state
+  const ss = calcSSIncome(S.ericAge, S.ericSSAge, S.karenSSAge, port, S.ha);
+  const eSS    = ss.steady.eSS;
+  const kSS    = ss.steady.kSS;
+  const total  = ss.steady.total;   // steady state (all SS flowing)
+  const totalYr1 = ss.year1.total;  // year 1 at retirement (SS may not have started)
+  const surplus = total - LIFESTYLE;
+  const surplusYr1 = totalYr1 - LIFESTYLE;
+
+  // Tax calculation (steady state)
+  const tax = calcTax(port, S.ha, eSS, kSS, S.rothMonthly || 500);
+  const netSurplus = tax.netMonthly - LIFESTYLE;
+  // Tax year 1
+  const taxYr1 = calcTax(port, S.ha, ss.year1.eSS, ss.year1.kSS, S.rothMonthly || 500);
+
+  // Metrics
+  // Max income scenario — age 70, all SS claimed at best ages
+  const maxAssets = calcAssets(70);
+  const maxPort   = maxAssets.total * 0.04 / 12;
+  const maxIncome = maxPort + (S.ha||3500) + (ERIC_SS[70]||3989) + (KAREN_SS[67]||3567);
+
+  document.getElementById('m-tot').textContent = fmt(total);
+  document.getElementById('m-tot-sub').textContent = ss.yrsToFull > 0
+    ? 'once all SS active (Eric age ' + ss.ericAgeAtFull + ')'
+    : 'all SS flowing at retirement';
+  if (document.getElementById('m-ann')) document.getElementById('m-ann').textContent = fmtM(total * 12);
+  if (document.getElementById('m-max')) {
+    document.getElementById('m-max').textContent = fmt(maxIncome);
+    document.getElementById('m-max-sub').textContent = 'age 70 · Eric SS $3,989 · Karen SS $3,567';
+  }
+  document.getElementById('m-yr1').textContent = fmt(totalYr1);
+  // Build a clear gap description
+  let gapDesc = 'full income from day 1';
+  if (ss.yrsToFull > 0) {
+    const parts = [];
+    if (ss.yrsToEricSS > 0) parts.push('Eric SS age ' + S.ericSSAge);
+    if (ss.yrsToKarenSS > 0) parts.push('Karen SS age ' + ss.karenAgeAtFull + ' (Eric age ' + ss.ericAgeAtFull + ')');
+    gapDesc = 'waiting: ' + parts.join(' · ');
+  }
+  document.getElementById('m-yr1-sub').textContent = gapDesc;
+  // Note same-year inheritance in year-1 metric
+  const inh1SameYr = S.inh  && (S.inhYr ||10) === (S.ericAge-55);
+  const inh2SameYr = S.inh2 && (S.inh2Yr||10) === (S.ericAge-55);
+  if ((inh1SameYr || inh2SameYr) && document.getElementById('m-yr1')) {
+    document.getElementById('m-yr1-sub').textContent += ' (incl. inheritance arriving this year)';
+  }
+  if (document.getElementById('m-yr1')) document.getElementById('m-yr1').style.color = ss.yrsToFull > 0 ? 'var(--amber)' : 'var(--green)';
+  document.getElementById('m-liq').textContent = fmtM(assets.total);
+  document.getElementById('m-sur').textContent = fmt(surplus);
+
+  // After-tax metrics
+  if (document.getElementById('m-net')) {
+    document.getElementById('m-net').textContent = fmt(tax.netMonthly);
+    document.getElementById('m-tax').textContent = fmt(tax.total);
+    document.getElementById('m-eff').textContent = (tax.effectiveRate * 100).toFixed(1) + '%';
+    document.getElementById('m-netsur').textContent = fmt(netSurplus);
+  }
+  // Net at retirement (year 1) — before SS fully flowing
+  if (document.getElementById('m-net-yr1')) {
+    const netYr1 = taxYr1.netMonthly;
+    document.getElementById('m-net-yr1').textContent = fmt(netYr1);
+    document.getElementById('m-net-yr1').style.color = netYr1 < 9545 ? '#c0392b' : 'var(--green)';
+    document.getElementById('m-net-yr1-sub').textContent =
+      ss.yrsToFull > 0
+        ? 'before SS · full income at Eric age ' + ss.ericAgeAtFull
+        : 'all SS flowing from day 1';
+  }
+
+  // Tax breakdown panel
+  try {
+  if (document.getElementById('tax-panel')) {
+    const noTax = S.noStateTax;
+    document.getElementById('tx-gross').textContent    = fmt(total) + '/mo';
+    document.getElementById('tx-ha').textContent       = fmt(S.ha) + '/mo';
+    document.getElementById('tx-roth').textContent     = fmt(S.rothMonthly || 500) + '/mo';
+    document.getElementById('tx-ss-pct').textContent   = tax.ssTaxPct + '% taxable';
+    document.getElementById('tx-taxable-ss').textContent = fmt(tax.taxableSS) + '/mo';
+    document.getElementById('tx-agi').textContent      = fmt(tax.agi) + '/mo';
+    document.getElementById('tx-federal').textContent  = fmt(tax.federal) + '/mo';
+    document.getElementById('tx-state').textContent    = noTax ? '$0/mo (no income tax)' : fmt(tax.state) + '/mo';
+    document.getElementById('tx-total').textContent    = fmt(tax.total) + '/mo';
+    document.getElementById('tx-net').textContent      = fmt(tax.netMonthly) + '/mo';
+    document.getElementById('tx-eff').textContent      = (tax.effectiveRate * 100).toFixed(1) + '%';
+    document.getElementById('tx-netsur').textContent   = fmt(netSurplus) + '/mo';
+    if (document.getElementById('tx-state-save')) {
+      document.getElementById('tx-state-save').textContent = noTax
+        ? 'Saving ' + fmt(tax.state) + '/mo vs Virginia'
+        : fmt(tax.state) + '/mo · Moving saves ' + fmt(tax.state) + '/mo';
+    }
+    // State savings note
+    document.getElementById('tx-va-note').innerHTML = noTax
+      ? '<span style="color:#27ae60">✓ No state income tax — saving ' + fmt(tax.state*12/12) + '/mo vs Virginia (' + fmt(tax.state) + '/mo · $' + Math.round(tax.state*12/1000) + 'K/yr)</span>'
+      : '<span style="color:#e67e22">Virginia taxes retirement income. Moving to FL/TN/TX saves ' + fmt(tax.state) + '/mo ($' + Math.round(tax.state*12/1000) + 'K/yr · $' + Math.round(tax.state*12*20/1000) + 'K over 20 yrs)</span>';
+  }
+  } catch(e) { /* tax panel not yet rendered */ }
+
+  // Breakdown
+  document.getElementById('br-p').textContent   = fmt(port) + '/mo';
+  document.getElementById('br-h').textContent   = fmt(S.ha) + '/mo';
+  document.getElementById('br-e').textContent   = fmt(eSS) + '/mo';
+  document.getElementById('br-k').textContent   = fmt(kSS) + '/mo';
+  document.getElementById('br-tot').textContent = fmt(total) + '/mo';
+  document.getElementById('br-yr1').textContent = fmt(totalYr1) + '/mo';
+  if (ss.yrsToFull > 0) {
+    const noteParts = [];
+    if (ss.yrsToEricSS > 0) noteParts.push('Eric claims age ' + S.ericSSAge);
+    if (ss.yrsToKarenSS > 0) noteParts.push('Karen claims age ' + ss.karenAgeAtFull + ' = Eric age ' + ss.ericAgeAtFull);
+    document.getElementById('br-yr1-note').textContent = '(' + noteParts.join(' · ') + ')';
+  } else {
+    document.getElementById('br-yr1-note').textContent = '(all SS flowing immediately)';
+  }
+  document.getElementById('br-eb').textContent  = 'at ' + S.ericSSAge;
+  document.getElementById('br-kb').textContent  = 'at ' + S.karenSSAge;
+
+  // Stack bar
+  [{id:'sp',lb:'spl',v:port},{id:'sh',lb:'shl',v:S.ha},{id:'se',lb:'sel',v:eSS},{id:'sk',lb:'skl',v:kSS}].forEach(s => {
+    const pct = (s.v/total*100).toFixed(1);
+    document.getElementById(s.id).style.width = pct + '%';
+    document.getElementById(s.lb).textContent = pct > 8 ? ({sp:'Portfolio',sh:'HA',se:'Eric SS',sk:'Karen SS'}[s.id]) : '';
+  });
+
+  // Insight
+  let ins = '';
+  if (S.ericAge <= 61) ins = '<div class="flag fn"><strong>Age ' + S.ericAge + ' — early retirement. Karen is ' + karenAge + '.</strong> ' + fmt(totalYr1) + '/mo at retirement' + (ss.yrsToFull>0?' · Full income ' + fmt(total) + '/mo at Eric age ' + ss.ericAgeAtFull:'') + '. No SS available until 62.</div>';
+  else if (S.ericAge <= 65) ins = '<div class="flag fg"><strong>Age ' + S.ericAge + ' works — income far exceeds lifestyle need.</strong> ' + fmt(total) + '/mo is ' + fmt(surplus) + '/mo above your ~$9K lifestyle cost. Karen retires at ' + karenAge + ' the same year.</div>';
+  else if (S.ericAge === 69) {
+    if (ss.yrsToFull > 0) {
+      ins = `<div class="flag fg"><strong>★ Sweet spot — age 69. Both retire together.</strong> Karen is 63.<br>
+        <strong>Age 69 (year 1, no SS yet):</strong> ${fmt(totalYr1)}/mo · ${fmt(surplusYr1)}/mo above lifestyle<br>
+        <strong>Age ${S.ericSSAge}+ (SS flowing):</strong> ${fmt(total)}/mo · ${fmt(surplus)}/mo above lifestyle<br>
+        ${ss.yrsToEricSS>0?'Eric SS starts at age '+S.ericSSAge+'.':''} ${ss.yrsToKarenSS>0?'Karen SS starts at her age '+ss.karenAgeAtFull+' (Eric age '+ss.ericAgeAtFull+').':''} Full income: +${fmt(ss.ssGap)}/mo.</div>`;
+    } else {
+      ins = `<div class="flag fg"><strong>★ Sweet spot — age 69. Both retire together.</strong> Karen is 63. ${fmt(total)}/mo — ${fmt(surplus)}/mo above lifestyle.</div>`;
+    }
+  }
+  else if (S.ericAge === 70) ins = `<div class="flag fg"><strong>Maximum income — age 70. Karen is ${karenAge}.</strong> ${fmt(total)}/mo · ${fmtM(total*12)}/yr. $4.98M liquid. SS maximized.</div>`;
+  else {
+    if (ss.yrsToFull > 0) {
+      ins = `<div class="flag ${surplusYr1>0?'fg':'fa'}"><strong>Age ${S.ericAge} — Karen retires at ${karenAge}.</strong><br>
+        <strong>At retirement (age ${S.ericAge}):</strong> ${fmt(totalYr1)}/mo${ss.yrsToEricSS>0?' — Eric SS starts at his age '+S.ericSSAge:''}${ss.yrsToKarenSS>0?' · Karen SS starts at her age '+ss.karenAgeAtFull+' (Eric age '+ss.ericAgeAtFull+')':''}<br>
+        <strong>Full income (Eric age ${ss.ericAgeAtFull}+):</strong> ${fmt(total)}/mo once all SS active (+${fmt(ss.ssGap)}/mo)</div>`;
+    } else {
+      ins = `<div class="flag ${surplus>0?'fg':'fa'}"><strong>Age ${S.ericAge} — ${fmt(total)}/mo. Karen retires at ${karenAge}.</strong> ${surplus>0?fmt(surplus)+'/mo above':'−'+fmt(Math.abs(surplus))+'/mo below'} your ~$9K lifestyle need.</div>`;
+    }
+  }
+  if (S.karenSSAge === 63) ins += `<div class="flag fr" style="margin-top:6px"><strong>⚠ Karen at 63 costs $12,216/year forever.</strong> You don't need the income. Wait to 67.</div>`;
+  if (!S.sell) ins += `<div class="flag fa" style="margin-top:6px"><strong>Keeping home = ~$1.49M illiquid at retirement.</strong> Selling converts it to $5,273+/mo in income.</div>`;
+  document.getElementById('insight').innerHTML = ins;
+
+  renderScenarioTable();
+  renderAssetTable();
+  renderWealthWaterfall(assets);
+  updateRent();
+}
+
+function renderScenarioTable() {
+  const tbody = document.getElementById('stbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  for (let age = 60; age <= 70; age++) {
+    try {
+      const a = calcAssets(age);
+      const port = a.total * 0.04 / 12;
+      const eSS  = ERIC_SS[S.ericSSAge]  || 3989;
+      const kSS  = KAREN_SS[S.karenSSAge] || 3567;
+      const karenAge = 49 + (age - 55);
+      const ss2  = calcSSIncome(age, S.ericSSAge, S.karenSSAge, port, S.ha);
+      const roth = S.rothMonthly || 950;
+      const tax2 = calcTax(port, S.ha, ss2.steady.eSS, ss2.steady.kSS, roth);
+      // For AT RETIREMENT column: show income excluding same-year inheritances
+      const sameYrInh = ((S.inh && S.inhYr==(age-55) ? (S.inhAmt||500000) : 0) +
+                         (S.inh2 && S.inh2Yr==(age-55) ? (S.inh2Amt||6250000) : 0));
+      const portPreInh = Math.max(0, (a.total - sameYrInh) * 0.04/12);
+      const yr1IncomePreInh = portPreInh + (S.ha||3500) + ss2.year1.eSS + ss2.year1.kSS;
+      const netSurp  = tax2.netMonthly - LIFESTYLE;
+      const sc       = netSurp > 0 ? '#27ae60' : '#c0392b';
+      const yr1Color = ss2.yrsToFull > 0 ? '#e67e22' : '#27ae60';
+      const yr1Note  = ss2.yrsToFull > 0 ? ' ⚡' : '';
+      const tr = document.createElement('tr');
+      if (age === S.ericAge) tr.className = 'sel';
+      else if (age === 69)   tr.className = 'hl';
+      // Net year 1 (pre-SS, pre same-yr inheritance)
+      const taxYr1b = calcTax(portPreInh, S.ha, ss2.year1.eSS, ss2.year1.kSS, roth);
+      const netYr1 = taxYr1b.netMonthly;
+      const netSteady = tax2.netMonthly;
+      const netSteadySurp = netSteady - LIFESTYLE;
+      const scSteady = netSteadySurp > 0 ? '#27ae60' : '#c0392b';
+      const yr1Tip = (sameYrInh>0?'*Excl. $'+Math.round(sameYrInh/1e3)+'K same-yr inheritance. ':'') +
+                     (ss2.yrsToFull>0?'⚡ SS not yet flowing — full SS at Eric age '+ss2.ericAgeAtFull:'✓ All SS flowing day 1');
+      tr.innerHTML =
+        `<td style="font-weight:700">${age}${age===69?' ★':''}</td>` +
+        `<td>${karenAge}</td>` +
+        `<td>${fmtM(a.total)}</td>` +
+        `<td style="color:${yr1Color};font-weight:600" title="${yr1Tip}">${fmt(yr1IncomePreInh)}${yr1Note}${sameYrInh>0?'†':''}</td>` +
+        `<td style="font-weight:700;color:#1b3a5c">${fmt(ss2.steady.total)}</td>` +
+        `<td style="color:#c0392b">−${fmt(tax2.total)}</td>` +
+        `<td style="color:${netYr1 < LIFESTYLE ? '#c0392b' : '#27ae60'};font-weight:600">${fmt(netYr1)}</td>` +
+        `<td style="font-weight:700;color:${scSteady}">${fmt(netSteady)}</td>` +
+        `<td style="color:${scSteady};font-weight:600">${netSteadySurp>0?'+':'-'}${fmt(Math.abs(netSteadySurp))}</td>`;
+      tbody.appendChild(tr);
+    } catch(e) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${age}</td><td colspan="12" style="color:#c0392b;font-size:10px">Error: ${e.message}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+}
+
+function renderAssetTable() {
+  const tbody = document.getElementById('asset-tbody'); tbody.innerHTML = '';
+  const years = [1,3,5,7,8,10,12,14,15];
+  let eb = 161000, kb = 245481, prevYr = 0;
+  years.forEach(yr => {
+    for (let y = prevYr+1; y <= yr; y++) {
+      const re = S.ericRet/100/12, rk = S.karenRet/100/12;
+      for (let m=0;m<12;m++) eb = eb*(1+re)+36200/12;
+      const sal = 138000*Math.pow(1.02,y), c=(Math.min(sal*0.04,31000)+sal*0.02)/12;
+      for (let m=0;m<12;m++) kb = kb*(1+rk)+c;
+    }
+    prevYr = yr;
+    const isR = (55+yr) === S.ericAge;
+    const tr = document.createElement('tr');
+    if (isR) tr.style.background = '#e8f4fd';
+    tr.innerHTML = `<td style="font-weight:${isR?700:400}">${yr}${isR?' ← retire':''}</td>
+      <td style="text-align:right">${55+yr}</td>
+      <td style="text-align:right">${fmtM(eb)}</td>
+      <td style="text-align:right">${fmtM(kb)}</td>
+      <td style="text-align:right;font-weight:600;color:var(--navy)">${fmtM(eb+kb)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderWealthWaterfall(assets) {
+  const c = document.getElementById('wealth-wf');
+  const maxV = assets.total * 1.05;
+  const items = [
+    {l:'Eric 403(b)(9)',v:assets.eric,col:'#1b3a5c'},
+    {l:'Karen 403(b)/IRA',v:assets.karen,col:'#546e8a'},
+    {l:'Home proceeds (invested)',v:assets.home,col:S.sell?'#27ae60':'#ccc'},
+    {l:'Inheritance (yr '+(S.inhYr||10)+', age '+(55+(S.inhYr||10))+')',v:assets.inh,col:S.inh?'#c9a84c':'#ccc'},
+    {l:"Karen's father (yr "+(S.inh2Yr||5)+", Eric age "+(55+(S.inh2Yr||5))+")",v:assets.inh2||0,col:S.inh2?'#2980b9':'#ccc'},
+    {l:'Additional investments',v:assets.addl||0,col:'#7b5ea7'},
+  ];
+  c.innerHTML = '';
+  items.forEach(i => {
+    if (i.v <= 0) return;
+    const pct = (i.v/maxV*100).toFixed(0);
+    c.innerHTML += `<div class="wr"><div class="wl">${i.l}</div><div class="wb"><div class="wbar" style="width:${pct}%;background:${i.col}">${pct>14?fmtM(i.v):''}</div></div><div class="wv" style="color:${i.col}">${fmtM(i.v)}</div></div>`;
+  });
+  c.innerHTML += `<div class="wr" style="margin-top:5px;padding-top:5px;border-top:2px solid var(--navy)"><div class="wl fw6">TOTAL LIQUID</div><div class="wb"><div class="wbar" style="width:95%;background:#0f2744">${fmtM(assets.total)}</div></div><div class="wv fw6">${fmtM(assets.total)}</div></div>`;
+}
+
+// ── HOUSING / RENT CONTROLS ──
+function updateRent() {
+  S.rentAmt = +document.getElementById('sl-rent').value;
+  document.getElementById('lbl-rent').textContent = fmt(S.rentAmt);
+  document.getElementById('ncb-rent-lbl').textContent = fmt(S.rentAmt);
+
+  const invReturn = INV_RETURN_MONTHLY; // $3,621/mo fixed (based on $599K @ 7.25%)
+  const savingsVsToday = 3700 - S.rentAmt;
+  const netCostOfRent = S.rentAmt - invReturn; // negative = renting pays YOU
+
+  // Update bar
+  const rentBar = document.getElementById('ncb-rent');
+  const rentVal = document.getElementById('ncbv-rent');
+
+  // Scale: $3,700 = 100% width. Negative values shown as small bar on left
+  // net keep home = -$476, net rent 2600 = -$3,825
+  // Show absolute distance from zero, green if negative (better)
+  const absNet = Math.abs(netCostOfRent);
+  const maxRef = 5500;
+  const barW = Math.min(absNet / maxRef * 100, 100).toFixed(0);
+  const isNeg = netCostOfRent < 0;
+
+  rentBar.style.width = barW + '%';
+  rentBar.style.background = isNeg ? 'var(--green)' : 'var(--red)';
+  rentBar.textContent = isNeg
+    ? `Net ${fmt(netCostOfRent)}/mo — investments pay more than rent!`
+    : `Net +${fmt(netCostOfRent)}/mo — rent exceeds investment returns`;
+  rentVal.textContent = fmt(netCostOfRent);
+  rentVal.style.color = isNeg ? 'var(--green)' : 'var(--red)';
+
+  // Verdict
+  let verdict = '';
+  if (S.rentAmt <= 2400) {
+    verdict = `<div class="flag fg"><strong>Good choice at ${fmt(S.rentAmt)}/mo.</strong> Your investment return on proceeds ($3,621/mo) covers the rent entirely and leaves ${fmt(invReturn - S.rentAmt)}/mo of net investment income beyond housing. You're essentially getting paid to rent.</div>`;
+  } else if (S.rentAmt <= 3000) {
+    verdict = `<div class="flag fg"><strong>Good choice at ${fmt(S.rentAmt)}/mo.</strong> Investment returns ($3,621/mo) exceed rent — you net ${fmt(invReturn - S.rentAmt)}/mo after housing. Comparable house, solid lifestyle, full liquidity.</div>`;
+  } else if (S.rentAmt <= 3700) {
+    verdict = `<div class="flag fa"><strong>Acceptable at ${fmt(S.rentAmt)}/mo — but shrinking advantage.</strong> Your net cost is ${fmt(netCostOfRent)}/mo. You're still better off than keeping the home, but the benefit narrows. Consider whether the extra space is worth it.</div>`;
+  } else {
+    verdict = `<div class="flag fr"><strong>Expensive at ${fmt(S.rentAmt)}/mo.</strong> Rent exceeds your investment return on proceeds. You'd be better off keeping the home or buying a smaller place with cash. The math doesn't work above ~$3,621/mo rent.</div>`;
+  }
+  document.getElementById('rent-verdict').innerHTML = verdict;
+}
+
+function selectRC(amt, name) {
+  document.getElementById('sl-rent').value = amt;
+  ['2200','2600','3000','3400'].forEach(a => {
+    const el = document.getElementById('rc-'+a);
+    el.classList.remove('rsel','rbad');
+    if (a == amt) { el.classList.add(amt <= 3000 ? 'rsel' : 'rbad'); }
+  });
+  S.rentAmt = amt;
+  updateRent();
+}
+
+// ── TOGGLES ──
+function setEricSS(a) {
+  S.ericSSAge = a;
+  document.getElementById('lbl-ess').textContent = a;
+  ['67','68','69','70'].forEach(x => {
+    document.getElementById('ess-'+x).className = 'tog' + (x==a?' ton':'');
+  });
+  const n = {67:'$2,999/mo — leaving $11,880/yr on table vs 70.',68:'$3,239/mo — +$2,880/yr vs FRA.',69:'$3,479/mo — +$5,760/yr vs FRA. Breakeven 83.',70:'$3,989/mo — maximum. Breakeven age 77. ★'};
+  document.getElementById('ess-note').textContent = n[a];
+  renderAll();
+}
+function setKarenSS(a) {
+  S.karenSSAge = a;
+  document.getElementById('lbl-kss').textContent = a;
+  ['63','65','67','70'].forEach(x => {
+    document.getElementById('kss-'+x).className = 'tog' + (x==a ? (x=='67'?' tog-g ton':' ton') : '');
+  });
+  const n = {63:'⚠ COSTLY — $2,549/mo. Costs $12,216/yr vs 67 FOREVER.',65:'$3,021/mo — $6,552/yr less than waiting to 67.',67:'★ RECOMMENDED — $3,567/mo. Breakeven from 63 = age 77.',70:'Maximum — $4,521/mo. +$954/mo vs 67. Worth it if Karen lives past 79.'};
+  document.getElementById('kss-note').textContent = n[a];
+  renderAll();
+}
+function setSell(v) {
+  S.sell = v;
+  document.getElementById('lbl-sell').textContent = v ? 'Yes' : 'No';
+  document.getElementById('sell-y').className = 'tog' + (v  ? ' ton' : '');
+  document.getElementById('sell-n').className = 'tog' + (!v ? ' ton' : '');
+  renderAll();
+}
+function setInh2(v) {
+  S.inh2 = v;
+  document.getElementById('lbl-inh2').textContent = v ? 'Include' : 'Exclude';
+  document.getElementById('inh2-y').className = 'tog' + (v  ? ' ton' : '');
+  document.getElementById('inh2-n').className = 'tog' + (!v ? ' ton' : '');
+  document.getElementById('inh2-detail').style.opacity = v ? '1' : '0.3';
+  document.getElementById('inh2-detail').style.pointerEvents = v ? 'auto' : 'none';
+  S.ericRet  = +document.getElementById('sl-eret').value || 9.31;
+  S.karenRet = +document.getElementById('sl-kret').value || 7.25;
+  renderAll();
+}
+function updateInh2() {
+  S.inh2Amt = +document.getElementById('sl-inh2-amt').value;
+  S.inh2Yr  = +document.getElementById('sl-inh2-yr').value;
+  const ericAge = 55 + S.inh2Yr;
+  const yrsInv  = Math.max(0, S.ericAge - S.inh2Yr);
+  const fv = S.inh2Amt * Math.pow(1+(S.karenRet||7.25)/100, yrsInv);
+  const fmtA = S.inh2Amt>=1e6?'$'+(S.inh2Amt/1e6).toFixed(2)+'M':'$'+(S.inh2Amt/1000).toFixed(0)+'K';
+  const fmtF = fv>=1e6?'$'+(fv/1e6).toFixed(2)+'M':'$'+(fv/1000).toFixed(0)+'K';
+  document.getElementById('lbl-inh2-amt').textContent = fmtA;
+  document.getElementById('lbl-inh2-yr').textContent  = S.inh2Yr;
+  document.getElementById('lbl-inh2-age').textContent = ericAge;
+  document.getElementById('inh2-hint').innerHTML = fmtA+' received at Eric age '+ericAge+
+    (yrsInv>0?' · invested '+yrsInv+' yr'+(yrsInv>1?'s':'')+' to retirement · grows to ~'+fmtF:' · received at or after retirement');
+  S.ericRet  = +document.getElementById('sl-eret').value || 9.31;
+  S.karenRet = +document.getElementById('sl-kret').value || 7.25;
+  renderAll();
+}
+function setInh(v) {
+  S.inh = v;
+  document.getElementById('lbl-inh').textContent = v ? 'Include' : 'Exclude';
+  document.getElementById('inh-y').className = 'tog' + (v  ? ' ton' : '');
+  document.getElementById('inh-n').className = 'tog' + (!v ? ' ton' : '');
+  // Use visibility instead of display:none so event listeners stay attached
+  document.getElementById('inh-detail').style.opacity  = v ? '1' : '0.3';
+  document.getElementById('inh-detail').style.pointerEvents = v ? 'auto' : 'none';
+  S.ericRet  = +document.getElementById('sl-eret').value  || 9.31;
+  S.karenRet = +document.getElementById('sl-kret').value  || 7.25;
+  renderAll();
+}
+
+function updateInheritance() {
+  S.inhAmt = +document.getElementById('sl-inh-amt').value;
+  S.inhYr  = +document.getElementById('sl-inh-yr').value;
+  const inhAgeAtReceive = 55 + S.inhYr;
+  const yrsInvested = Math.max(0, S.ericAge - S.inhYr);
+  const fv = S.inhAmt * Math.pow(1 + (S.karenRet||7.25)/100, yrsInvested);
+  const fmtAmt = S.inhAmt >= 1000000 ? '$' + (S.inhAmt/1000000).toFixed(2) + 'M' : '$' + (S.inhAmt/1000).toFixed(0) + 'K';
+  const fmtFV  = fv >= 1000000 ? '$' + (fv/1000000).toFixed(2) + 'M' : '$' + (fv/1000).toFixed(0) + 'K';
+  document.getElementById('lbl-inh-amt').textContent = fmtAmt;
+  document.getElementById('lbl-inh-yr').textContent  = S.inhYr;
+  document.getElementById('lbl-inh-age').textContent = inhAgeAtReceive;
+  document.getElementById('inh-invest-yrs').textContent = yrsInvested > 0 ? yrsInvested : 'at';
+  document.getElementById('inh-fv').textContent = fmtFV;
+  document.getElementById('inh-hint').innerHTML =
+    fmtAmt + ' received at Eric age ' + inhAgeAtReceive +
+    (yrsInvested > 0
+      ? ' · invested ' + yrsInvested + ' yr' + (yrsInvested>1?'s':'') + ' to retirement · grows to ~' + fmtFV
+      : ' · received at or after retirement · face value ' + fmtAmt);
+  // Sync return rates from sliders before recalculating
+  S.ericRet  = +document.getElementById('sl-eret').value  || 9.31;
+  S.karenRet = +document.getElementById('sl-kret').value  || 7.25;
+  renderAll();
+}
+function showTab(id, btn) {
+  document.querySelectorAll('.tp').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+
+// ── CONTRIBUTION + SAVINGS CONTROLS ──
+let projYears = 5;
+function setProj(v) {
+  projYears = v === 'retire' ? (S.ericAge - 55) : +v;
+  document.querySelectorAll('.pt').forEach(b => b.classList.remove('pton'));
+  document.getElementById('proj-'+v).classList.add('pton');
+  renderProjectionTable();
+}
+
+function updateContribs() {
+  S.ericPct    = +document.getElementById('sl-epct').value;
+  S.karenPct   = +document.getElementById('sl-kpct').value;
+  S.ericRaise  = +document.getElementById('sl-eraise').value;
+  S.karenRaise = +document.getElementById('sl-kraise').value;
+
+  document.getElementById('lbl-epct').textContent   = S.ericPct + '%';
+  document.getElementById('lbl-kpct').textContent   = S.karenPct + '%';
+  document.getElementById('lbl-eraise').textContent = S.ericRaise + '%';
+  document.getElementById('lbl-kraise').textContent = S.karenRaise + '%';
+
+  // Eric calcs
+  const eSal = 188000;
+  const eEmp = Math.min(eSal * S.ericPct/100, 31000);
+  const eMatch = eSal * 0.06;  // 6% match capped
+  const bonusGross = 18033;
+  const eBonus = bonusGross * (S.ericPct/100 + 0.06); // 9% emp + 6% er on gross bonus
+  const eTotal = eEmp + eMatch + eBonus;
+  const eTakeImpact = -(eEmp - 15750) / 12; // change vs baseline
+
+  document.getElementById('e-emp-mo').textContent = fmt(eEmp/12) + '/mo';
+  document.getElementById('e-emp-yr').textContent = fmt(eEmp) + '/yr';
+  document.getElementById('e-match-yr').textContent = fmt(eMatch) + '/yr';
+  document.getElementById('e-total-yr').textContent = fmt(eTotal) + '/yr';
+  document.getElementById('e-takehome-impact').textContent =
+    (eTakeImpact <= 0 ? '' : '+') + fmt(eTakeImpact) + '/mo vs current';
+
+  const ePct = S.ericPct;
+  let eFlagClass = 'fn', eFlagMsg = '';
+  if (ePct < 6) { eFlagClass = 'fr'; eFlagMsg = '<strong>⚠ Below employer match threshold (6%)</strong>You are leaving free money on the table. Increase to at least 6% to capture the full match.'; }
+  else if (ePct === 9) { eFlagClass = 'fn'; eFlagMsg = '<strong>Currently at 9% — capturing full match</strong>IRS limit: $23,500 employee. Catch-up eligible now (+$7,500). Consider increasing toward the limit.'; }
+  else if (ePct >= 13) { eFlagClass = 'fg'; eFlagMsg = '<strong>Excellent contribution rate</strong>Maximizing deferred compensation and tax-free growth. Keep it up.'; }
+  else { eFlagClass = 'fn'; eFlagMsg = `<strong>At ${ePct}% — solid, above match threshold</strong>Increasing further accelerates retirement timeline.`; }
+  document.getElementById('e-contrib-flag').className = 'flag ' + eFlagClass;
+  document.getElementById('e-contrib-flag').innerHTML = eFlagMsg;
+  document.getElementById('eric-contrib-hint').textContent =
+    fmt(eEmp) + '/yr employee · ' + fmt(eMatch) + ' employer match (6%) · ' + fmt(eBonus) + ' bonus contrib';
+
+  // Karen calcs
+  const kSal = 138000;
+  const kEmp = Math.min(kSal * S.karenPct/100, 31000);
+  const kMatch = kSal * 0.06; // UVA: 401(a) + Plan 2 = 6%
+  const kTotal = kEmp + kMatch;
+  const kTakeImpact = -(kEmp - 16551) / 12; // baseline: 12% of $138K = $16,551
+
+  document.getElementById('k-emp-mo').textContent = fmt(kEmp/12) + '/mo';
+  document.getElementById('k-emp-yr').textContent = fmt(kEmp) + '/yr';
+  document.getElementById('k-match-yr').textContent = fmt(kMatch) + '/yr';
+  document.getElementById('k-total-yr').textContent = fmt(kTotal) + '/yr';
+  document.getElementById('k-takehome-impact').textContent =
+    (kTakeImpact <= 0 ? '' : '+') + fmt(kTakeImpact) + '/mo vs current';
+
+  const kPct = S.karenPct;
+  let kFlagClass = 'fn', kFlagMsg = '';
+  if (kPct < 2) { kFlagClass = 'fr'; kFlagMsg = '<strong>⚠ Very low contribution</strong>UVA still contributes 6% regardless. But increase your employee rate to build your balance faster.'; }
+  else if (kPct <= 10) { kFlagClass = 'fn'; kFlagMsg = '<strong>At ' + kPct + '% — below confirmed 12%</strong>Karen\'s paystub shows 6% pre-tax + 6% Roth. Increase to 12%.'; }
+  else if (kPct >= 10) { kFlagClass = 'fg'; kFlagMsg = '<strong>Strong rate at ' + kPct + '%</strong>This adds significantly to your year-15 balance. Well done.'; }
+  else { kFlagClass = 'fn'; kFlagMsg = `<strong>At ${kPct}% — moving in the right direction</strong>Keep increasing toward 10%+.`; }
+  document.getElementById('k-contrib-flag').className = 'flag ' + kFlagClass;
+  document.getElementById('k-contrib-flag').innerHTML = kFlagMsg;
+  document.getElementById('karen-contrib-hint').textContent =
+    fmt(kEmp) + '/yr employee · ' + fmt(kMatch) + ' UVA employer (401a + Plan 2)';
+
+  // Summary metrics — total to plan (employee + employer + bonus)
+  const totalEricYr = eEmp + eMatch + eBonus;
+  const totalKarenYr = kEmp + kMatch;
+  const totalMo = (totalEricYr + totalKarenYr) / 12;
+  const totalYr = totalEricYr + totalKarenYr;
+  const totalPct = (totalYr / (175000 + 138000) * 100).toFixed(1);
+  const assets = calcAssets(S.ericAge);
+  document.getElementById('sv-total-mo').textContent = fmt(totalMo);
+  document.getElementById('sv-total-yr').textContent = fmt(totalYr);
+  document.getElementById('sv-pct').textContent = totalPct + '%';
+  document.getElementById('sv-at-retire').textContent = fmtM(assets.total);
+
+  renderProjectionTable();
+  renderAdditionalImpact();
+  renderAll(); // also update main planner
+}
+
+function renderProjectionTable() {
+  const tbody = document.getElementById('proj-tbody'); tbody.innerHTML = '';
+  const maxYr = projYears === (S.ericAge-55) ? S.ericAge-55 : projYears;
+
+  for (let y = 1; y <= maxYr; y++) {
+    const eSal = 175000 * Math.pow(1 + S.ericRaise/100, y);
+    const eEmp = Math.min(eSal * S.ericPct/100, 31000);
+    const eMatch = eSal * 0.06;
+    const bonusGross = 15000; // confirmed $15K gross bonus
+    const eBonus = bonusGross * ((S.ericPct||10)/100 + 0.06);
+    const eTot = eEmp + eMatch + eBonus;
+
+    const kSal = 138000 * Math.pow(1 + S.karenRaise/100, y);
+    const kEmp = Math.min(kSal * S.karenPct/100, 31000);
+    const kMatch = kSal * 0.06; // UVA 401(a) + Plan 2
+    const kTot = kEmp + kMatch;
+
+    const hhEmpMo = (eEmp + kEmp) / 12;
+    const hhEmpYr = eEmp + kEmp;
+    const isRetire = y === (S.ericAge - 55);
+
+    const tr = document.createElement('tr');
+    if (isRetire) { tr.style.background='#e8f4fd'; tr.style.fontWeight='600'; }
+    tr.innerHTML = `
+      <td>${y}${isRetire?' ★retire':''}</td>
+      <td style="text-align:right">${55+y}</td>
+      <td style="text-align:right">${fmt(eSal)}</td>
+      <td style="text-align:right;color:var(--navy)">${fmt(eEmp)}</td>
+      <td style="text-align:right;color:var(--green)">${fmt(eTot)}</td>
+      <td style="text-align:right">${fmt(kSal)}</td>
+      <td style="text-align:right;color:var(--navy)">${fmt(kEmp)}</td>
+      <td style="text-align:right;color:var(--slate)">${fmt(kTot)}</td>
+      <td style="text-align:right;font-weight:700">${fmt(hhEmpMo)}/mo</td>
+      <td style="text-align:right;font-weight:700">${fmt(hhEmpYr)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+// ── ADDITIONAL INVESTMENTS ──
+if (!S.addlInvests) S.addlInvests = [];
+let aiIdCounter = 0;
+
+function addInvestment() {
+  const amt = +document.getElementById('ai-amt').value;
+  const type = document.getElementById('ai-type').value;
+  const ret = +document.getElementById('ai-ret').value;
+  if (!amt || amt <= 0) { alert('Enter a monthly amount greater than $0.'); return; }
+  const id = ++aiIdCounter;
+  S.addlInvests.push({ id, amt, type, ret });
+  document.getElementById('ai-amt').value = '';
+  renderAdditionalList();
+  renderAdditionalImpact();
+  renderAll();
+}
+
+function removeInvestment(id) {
+  S.addlInvests = S.addlInvests.filter(i => i.id !== id);
+  renderAdditionalList();
+  renderAdditionalImpact();
+  renderAll();
+}
+
+function renderAdditionalList() {
+  const list = document.getElementById('ai-list');
+  if (S.addlInvests.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = S.addlInvests.map(inv => `
+    <div class="ai-item">
+      <span><strong>${fmt(inv.amt)}/mo</strong> · ${inv.type} · ${inv.ret}% return</span>
+      <span class="ai-del" onclick="removeInvestment(${inv.id})">✕</span>
+    </div>`).join('');
+}
+
+function renderAdditionalImpact() {
+  const impact = document.getElementById('ai-impact');
+  const wf = document.getElementById('ai-wf');
+  if (!S.addlInvests || S.addlInvests.length === 0) { impact.style.display='none'; return; }
+  impact.style.display = 'block';
+  const yr = S.ericAge - 55;
+  let total = 0, items = [];
+  S.addlInvests.forEach(inv => {
+    const rm = inv.ret/100/12, n = yr*12;
+    const fv = inv.amt * ((Math.pow(1+rm,n)-1)/rm);
+    total += fv;
+    items.push({ l: inv.type + ' (' + fmt(inv.amt) + '/mo @ ' + inv.ret + '%)', v: fv });
+  });
+  items.push({ l: 'TOTAL additional at retirement', v: total, bold: true });
+  const maxV = total * 1.05;
+  wf.innerHTML = items.map(i => {
+    const pct = (i.v/maxV*100).toFixed(0);
+    const income = i.v * 0.04 / 12;
+    return `<div class="wr"><div class="wl ${i.bold?'fw6':''}">${i.l}</div>
+      <div class="wb"><div class="wbar" style="width:${pct}%;background:${i.bold?'#7b5ea7':'#9b6fc7'}">${pct>14?fmtM(i.v):''}</div></div>
+      <div class="wv" style="color:#7b5ea7">${fmtM(i.v)}<div style="font-size:9px;color:var(--muted)">${fmt(income)}/mo</div></div></div>`;
+  }).join('');
+}
+
+
+function setStateTax(noTax) {
+  S.noStateTax = noTax;
+  document.getElementById('lbl-statetax').textContent = noTax ? 'FL/TN/TX (0%)' : 'Virginia';
+  document.getElementById('st-va').className   = 'tog' + (!noTax ? ' ton' : '');
+  document.getElementById('st-none').className = 'tog' + (noTax  ? ' ton' : '');
+  renderAll();
+}
+function setRoth() {
+  S.rothMonthly = +document.getElementById('sl-roth').value;
+  document.getElementById('lbl-roth').textContent = fmt(S.rothMonthly || 950) + '/mo';
+  renderAll();
+}
+
+// ── INIT ──
+S.ericPct=9; S.karenPct=12; S.ericRaise=3; S.karenRaise=2; S.addlInvests=[];
+S.noStateTax=false; S.rothMonthly=950; S.inhAmt=500000; S.inhYr=10;
+S.inh2=true; S.inh2Amt=6250000; S.inh2Yr=10;
+S.ericRet=9.31; S.karenRet=7.25; S.ha=3500; S.inh=true; S.sell=true; S.ericAge=69; S.karenRetireAge=63; S.karenRetireManual=false;
+S.ericSSAge=70; S.karenSSAge=67; S.rentAmt=2600;
+
+// Attach inheritance sliders via addEventListener (more reliable than oninput on hidden elements)
+document.getElementById('sl-inh2-amt').addEventListener('input', function() {
+  S.inh2Amt = +this.value; updateInh2();
+});
+document.getElementById('sl-inh2-yr').addEventListener('input', function() {
+  S.inh2Yr = +this.value; updateInh2();
+});
+document.getElementById('sl-inh-amt').addEventListener('input', function() {
+  S.inhAmt = +this.value;
+  S.ericRet  = +document.getElementById('sl-eret').value || 9.31;
+  S.karenRet = +document.getElementById('sl-kret').value || 7.25;
+  const inhAgeAtReceive = 55 + S.inhYr;
+  const yrsInvested = Math.max(0, S.ericAge - S.inhYr);
+  const fv = S.inhAmt * Math.pow(1 + S.karenRet/100, yrsInvested);
+  const fmtAmt = S.inhAmt >= 1e6 ? '$'+(S.inhAmt/1e6).toFixed(2)+'M' : '$'+(S.inhAmt/1000).toFixed(0)+'K';
+  const fmtFV  = fv >= 1e6 ? '$'+(fv/1e6).toFixed(2)+'M' : '$'+(fv/1000).toFixed(0)+'K';
+  document.getElementById('lbl-inh-amt').textContent = fmtAmt;
+  document.getElementById('inh-hint').innerHTML = fmtAmt + ' received at Eric age ' + inhAgeAtReceive +
+    (yrsInvested > 0 ? ' · invested ' + yrsInvested + ' yr' + (yrsInvested>1?'s':'') + ' to retirement · grows to ~' + fmtFV : ' · received at or after retirement · face value ' + fmtAmt);
+  renderAll();
+});
+
+document.getElementById('sl-inh-yr').addEventListener('input', function() {
+  S.inhYr = +this.value;
+  S.ericRet  = +document.getElementById('sl-eret').value || 9.31;
+  S.karenRet = +document.getElementById('sl-kret').value || 7.25;
+  const inhAgeAtReceive = 55 + S.inhYr;
+  const yrsInvested = Math.max(0, S.ericAge - S.inhYr);
+  const fv = S.inhAmt * Math.pow(1 + S.karenRet/100, yrsInvested);
+  const fmtAmt = S.inhAmt >= 1e6 ? '$'+(S.inhAmt/1e6).toFixed(2)+'M' : '$'+(S.inhAmt/1000).toFixed(0)+'K';
+  const fmtFV  = fv >= 1e6 ? '$'+(fv/1e6).toFixed(2)+'M' : '$'+(fv/1000).toFixed(0)+'K';
+  document.getElementById('lbl-inh-yr').textContent  = S.inhYr;
+  document.getElementById('lbl-inh-age').textContent = inhAgeAtReceive;
+  document.getElementById('inh-hint').innerHTML = fmtAmt + ' received at Eric age ' + inhAgeAtReceive +
+    (yrsInvested > 0 ? ' · invested ' + yrsInvested + ' yr' + (yrsInvested>1?'s':'') + ' to retirement · grows to ~' + fmtFV : ' · received at or after retirement · face value ' + fmtAmt);
+  renderAll();
+});
+
+updateContribs();
+update();
+</script>
+</body>
+</html>  if (S.inh && yr >= inhYr) {
+    const yi = yr - inhYr, rm = (S.karenRet||7.25)/100/12, n = yi*12;
+    inh = inhAmt * Math.pow(1+rm, n);
+  }
+
