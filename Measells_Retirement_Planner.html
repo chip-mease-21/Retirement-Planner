@@ -364,9 +364,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div class="ch"><div class="ci" style="background:#e8f0fb">📋</div><div class="ct">All Scenarios — Eric 62–70 · Karen always retires the same year</div></div>
       <div class="cb" style="padding:0;overflow-x:auto">
         <table class="tbl"><thead><tr>
-          <th>Eric Age</th><th>Year</th><th>Karen Age</th><th>Liquid Assets</th><th>Port /mo</th><th>HA /mo</th><th>Eric SS</th><th>Karen SS</th><th>At retirement</th><th>Full income</th><th>Tax /mo</th><th>Net /mo</th><th>vs $9K</th>
+          <th>Eric Age</th><th>Karen Age</th><th>Liquid Assets</th><th>Yr 1 Income*</th><th>Full Income†</th><th>Tax /mo†</th><th>Net Yr 1*</th><th>Net Steady†</th><th>vs $9,545</th>
         </tr></thead><tbody id="stbody"></tbody></table>
-        <div class="note" style="padding:8px 14px">★ green = age 69 sweet spot · Blue = your selected age. ⚡ SS not yet flowing day 1. * "At retirement" excludes inheritances arriving that same year — those show in Full Income.</div>
+        <div class="note" style="padding:8px 14px">★ = age 69 sweet spot · Blue = selected age · ⚡ = SS not yet flowing · † = same-year inheritance excluded from Yr 1 · *Full Income & Net Steady = all SS active · Net Yr 1 = after tax at retirement before SS · vs $9,545 = net steady surplus above lifestyle</div>
       </div>
     </div>
   </div>
@@ -1402,20 +1402,24 @@ function renderScenarioTable() {
       const tr = document.createElement('tr');
       if (age === S.ericAge) tr.className = 'sel';
       else if (age === 69)   tr.className = 'hl';
+      // Net year 1 (pre-SS, pre same-yr inheritance)
+      const taxYr1b = calcTax(portPreInh, S.ha, ss2.year1.eSS, ss2.year1.kSS, roth);
+      const netYr1 = taxYr1b.netMonthly;
+      const netSteady = tax2.netMonthly;
+      const netSteadySurp = netSteady - LIFESTYLE;
+      const scSteady = netSteadySurp > 0 ? '#27ae60' : '#c0392b';
+      const yr1Tip = (sameYrInh>0?'*Excl. $'+Math.round(sameYrInh/1e3)+'K same-yr inheritance. ':'') +
+                     (ss2.yrsToFull>0?'⚡ SS not yet flowing — full SS at Eric age '+ss2.ericAgeAtFull:'✓ All SS flowing day 1');
       tr.innerHTML =
-        `<td>${age}${age===69?' ★':''}</td>` +
-        `<td>${age-55}</td>` +
+        `<td style="font-weight:700">${age}${age===69?' ★':''}</td>` +
         `<td>${karenAge}</td>` +
         `<td>${fmtM(a.total)}</td>` +
-        `<td>${fmt(port)}</td>` +
-        `<td>${fmt(S.ha)}</td>` +
-        `<td>${fmt(eSS)}</td>` +
-        `<td>${fmt(kSS)}</td>` +
-        `<td style="font-weight:600;color:${yr1Color}" title="${sameYrInh>0?'Excl. same-yr inheritance ($'+Math.round(sameYrInh/1000)+'K). ':''} ${ss2.yrsToFull>0?'SS starts Eric age '+ss2.ericAgeAtFull:''}">${fmt(yr1IncomePreInh)}${yr1Note}${sameYrInh>0?'*':''}</td>` +
+        `<td style="color:${yr1Color};font-weight:600" title="${yr1Tip}">${fmt(yr1IncomePreInh)}${yr1Note}${sameYrInh>0?'†':''}</td>` +
         `<td style="font-weight:700;color:#1b3a5c">${fmt(ss2.steady.total)}</td>` +
         `<td style="color:#c0392b">−${fmt(tax2.total)}</td>` +
-        `<td style="font-weight:700;color:#27ae60">${fmt(tax2.netMonthly)}</td>` +
-        `<td style="color:${sc};font-weight:600">${netSurp>0?'+':'-'}${fmt(Math.abs(netSurp))}</td>`;
+        `<td style="color:${netYr1 < LIFESTYLE ? '#c0392b' : '#27ae60'};font-weight:600">${fmt(netYr1)}</td>` +
+        `<td style="font-weight:700;color:${scSteady}">${fmt(netSteady)}</td>` +
+        `<td style="color:${scSteady};font-weight:600">${netSteadySurp>0?'+':'-'}${fmt(Math.abs(netSteadySurp))}</td>`;
       tbody.appendChild(tr);
     } catch(e) {
       const tr = document.createElement('tr');
