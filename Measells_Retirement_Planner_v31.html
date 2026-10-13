@@ -1049,11 +1049,9 @@ function calcAssets(age) {
   let inh = 0;
   const inhAmt = S.inhAmt || 500000;
   const inhYr  = S.inhYr  || 10;
-  if (S.inh) {
-    if (yr >= inhYr) {
-      const yi = yr - inhYr, rm = S.karenRet/100/12, n = yi*12;
-      inh = inhAmt * Math.pow(1+rm, n);
-    } else { inh = inhAmt; }
+  if (S.inh && yr >= inhYr) {
+    const yi = yr - inhYr, rm = (S.karenRet||7.25)/100/12, n = yi*12;
+    inh = inhAmt * Math.pow(1+rm, n);
   }
   // Inheritance 2 — Karen's father (large estate)
   let inh2 = 0;
