@@ -785,7 +785,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="ch"><div class="ci" style="background:#e8f0fb">📈</div><div class="ct">403(b) Growth — Adjust Returns in Planner Tab</div></div>
         <div class="cb" style="padding:0;overflow-x:auto">
           <table class="tbl"><thead><tr><th>Year</th><th>Eric Age</th><th>Eric 403(b)</th><th>Karen 403(b)</th><th>Combined</th></tr></thead><tbody id="asset-tbody"></tbody></table>
-          <div class="note" style="padding:8px 12px">Eric: $167K · $30,080/yr (6% trad + 4% Roth + 6% employer on $188K) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
+          <div class="note" style="padding:8px 12px">Eric: $172K · $30,080/yr (6% trad + 4% Roth + 6% employer on $188K) · Empower return. Karen: $220K · $16,551/yr (6% emp + 6% UVA employer). Home sold yr 8. Inheritance: amount and year set by controls.</div>
         </div>
       </div>
       <div class="card">
@@ -1004,7 +1004,7 @@ function calcAssets(age) {
   const yr = age - 55;
   const re = (S.ericRet  || 9.31) / 100 / 12;
   const rk = (S.karenRet || 7.25) / 100 / 12;
-  let eb = 167000, kb = 243745;
+  let eb = 171541, kb = 243745;
   for (let y = 1; y <= yr; y++) {
     const retireYr = age - 55; // year they retire (= yr when calling calcAssets(age))
     const stillWorking = y < retireYr; // contributions stop IN the retirement year
